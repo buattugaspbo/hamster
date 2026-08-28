@@ -1,0 +1,30 @@
+"use client";
+
+import { FormEvent, useEffect, useState } from "react";
+import type { RegionOption } from "../lib/regions";
+
+type Address = { id: string; label: string; recipient_name: string; phone: string; address_line: string; district: string; regency_code: string; regency_name: string; province_code: string; province_name: string; postal_code: string; is_primary: boolean };
+
+async function regions(level: string, parent?: string) {
+  const query = new URLSearchParams({ level }); if (parent) query.set("parent", parent);
+  const response = await fetch(`/api/regions?${query}`); const data = await response.json() as { data?: RegionOption[] };
+  return data.data || [];
+}
+
+export function AddressesClient() {
+  const [rows, setRows] = useState<Address[]>([]); const [editing, setEditing] = useState<Address | null>(null); const [open, setOpen] = useState(false); const [error, setError] = useState("");
+  const [provinces, setProvinces] = useState<RegionOption[]>([]); const [regencies, setRegencies] = useState<RegionOption[]>([]); const [province, setProvince] = useState("");
+  const load = () => fetch("/api/account/addresses").then((r) => r.json() as Promise<{ addresses?: Address[] }>).then((data) => setRows(data.addresses || []));
+  useEffect(() => { void load(); regions("province").then(setProvinces); }, []);
+  const begin = async (address?: Address) => { setEditing(address || null); setOpen(true); setError(""); const code = address?.province_code || ""; setProvince(code); setRegencies(code ? await regions("regency", code) : []); };
+  const submit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault(); const form = new FormData(event.currentTarget); const regencyCode = String(form.get("regencyCode"));
+    const body = { label: form.get("label"), recipientName: form.get("recipientName"), phone: form.get("phone"), addressLine: form.get("addressLine"), district: form.get("district"), regencyCode, regencyName: regencies.find((item) => item.code === regencyCode)?.name || editing?.regency_name, provinceCode: province, provinceName: provinces.find((item) => item.code === province)?.name || editing?.province_name, postalCode: form.get("postalCode"), isPrimary: form.get("isPrimary") === "on" };
+    const response = await fetch(editing ? `/api/account/addresses/${editing.id}` : "/api/account/addresses", { method: editing ? "PATCH" : "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+    const payload = await response.json() as { error?: string }; if (!response.ok) { setError(payload.error || "Alamat gagal disimpan"); return; }
+    setOpen(false); setEditing(null); await load();
+  };
+  const remove = async (id: string) => { if (!window.confirm("Hapus alamat ini?")) return; await fetch(`/api/account/addresses/${id}`, { method: "DELETE" }); await load(); };
+  const makePrimary = async (row: Address) => { await fetch(`/api/account/addresses/${row.id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ isPrimary: true }) }); await load(); };
+  return <><div className="account-heading"><div><p className="eyebrow">PENGATURAN AKUN</p><h1>Alamat tersimpan</h1><p>Untuk pengiriman perlengkapan dan data pengambilan.</p></div><button className="button button--solid" onClick={() => begin()}>+ Tambah alamat</button></div><div className="address-grid">{rows.map((row) => <article className={`address-card ${row.is_primary ? "address-card--primary" : ""}`} key={row.id}><div>{row.is_primary && <span>UTAMA</span>}<b>{row.label}</b></div><h2>{row.recipient_name}</h2><p>{row.phone}</p><p>{row.address_line}<br />{row.district}, {row.regency_name}<br />{row.province_name} {row.postal_code}</p><div><button onClick={() => begin(row)}>Ubah</button><button onClick={() => remove(row.id)}>Hapus</button>{!row.is_primary && <button onClick={() => makePrimary(row)}>Jadikan utama</button>}</div></article>)}<button className="address-add" onClick={() => begin()}><span>＋</span><strong>Tambah alamat baru</strong><small>Rumah, kantor, atau lokasi lainnya</small></button></div>{open && <div className="admin-drawer-backdrop" onMouseDown={() => setOpen(false)}><aside className="admin-drawer" onMouseDown={(event) => event.stopPropagation()}><div className="drawer-heading"><h2>{editing ? "Ubah alamat" : "Tambah alamat"}</h2><button onClick={() => setOpen(false)}>×</button></div><form onSubmit={submit}>{error && <p className="form-error">{error}</p>}<div className="drawer-form-row"><label>Label<input name="label" required defaultValue={editing?.label || "Rumah"} /></label><label>Penerima<input name="recipientName" required defaultValue={editing?.recipient_name || ""} /></label></div><label>Nomor WhatsApp<input name="phone" required defaultValue={editing?.phone || ""} /></label><label>Alamat lengkap<textarea name="addressLine" required defaultValue={editing?.address_line || ""} /></label><div className="drawer-form-row"><label>Provinsi<select required value={province} onChange={async (event) => { setProvince(event.target.value); setRegencies(await regions("regency", event.target.value)); }}><option value="">Pilih</option>{provinces.map((item) => <option key={item.code} value={item.code}>{item.name}</option>)}</select></label><label>Kabupaten/kota<select name="regencyCode" required defaultValue={editing?.regency_code || ""}><option value="">Pilih</option>{regencies.map((item) => <option key={item.code} value={item.code}>{item.name}</option>)}</select></label></div><div className="drawer-form-row"><label>Kecamatan<input name="district" required defaultValue={editing?.district || ""} /></label><label>Kode pos<input name="postalCode" required defaultValue={editing?.postal_code || ""} /></label></div><label className="drawer-check"><input name="isPrimary" type="checkbox" defaultChecked={editing?.is_primary || rows.length === 0} /><span>Jadikan alamat utama</span></label><button className="button button--solid">Simpan alamat</button></form></aside></div>}</>;
+}

@@ -1,0 +1,73 @@
+"use client";
+
+import Link from "next/link";
+import { FormEvent, useState } from "react";
+import { useRouter } from "next/navigation";
+import { BrandLogo } from "./BrandLogo";
+import { createClient } from "../lib/supabase/client";
+
+function safeNextPath() {
+  const value = new URLSearchParams(window.location.search).get("next") || "/account";
+  return value.startsWith("/") && !value.startsWith("//") ? value : "/account";
+}
+
+export function AuthExperience({ mode }: { mode: "login" | "register" }) {
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [message, setMessage] = useState("");
+  const isRegister = mode === "register";
+
+  const submit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault(); setLoading(true); setError(""); setMessage("");
+    const form = new FormData(event.currentTarget);
+    try {
+      const supabase = createClient();
+      if (isRegister) {
+        const { data, error: authError } = await supabase.auth.signUp({
+          email: String(form.get("email")), password: String(form.get("password")),
+          options: {
+            emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(safeNextPath())}`,
+            data: { full_name: String(form.get("name")), phone: String(form.get("phone")) },
+          },
+        });
+        if (authError) throw authError;
+        if (!data.session) {
+          setMessage("Akun dibuat. Periksa email untuk mengaktifkan akunmu.");
+          return;
+        }
+      } else {
+        const { error: authError } = await supabase.auth.signInWithPassword({
+          email: String(form.get("email")), password: String(form.get("password")),
+        });
+        if (authError) throw authError;
+      }
+      router.push(safeNextPath()); router.refresh();
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : "Autentikasi gagal");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const continueWithGoogle = async () => {
+    setError("");
+    try {
+      const supabase = createClient();
+      const { error: authError } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: { redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(safeNextPath())}` },
+      });
+      if (authError) throw authError;
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : "Login Google gagal");
+    }
+  };
+
+  return (
+    <main className="auth-page">
+      <section className="auth-visual"><video src="https://commons.wikimedia.org/wiki/Special:Redirect/file/Rabbit%20bobbing%20up%20and%20down.webm" muted loop autoPlay playsInline /><div className="auth-visual__grade" /><div className="auth-quote"><p>“Kenalan dulu, pahami kebutuhannya, lalu bawa pulang dengan yakin.”</p><span>HOP & HAM CARE STANDARD</span></div></section>
+      <section className="auth-panel"><BrandLogo /><div className="auth-box"><p className="eyebrow">{isRegister ? "AKUN BARU" : "SELAMAT DATANG KEMBALI"}</p><h1>{isRegister ? "Mulai perjalananmu." : "Masuk ke akunmu."}</h1><p>{isRegister ? "Simpan alamat, reservasi hewan, dan pantau semua pesanan dalam satu tempat." : "Cek status reservasi, pembayaran, dan riwayat belanjamu."}</p><button className="social-auth" type="button" onClick={continueWithGoogle}><span>G</span> Lanjutkan dengan Google</button><div className="auth-divider"><i />atau dengan email<i /></div>{error && <p className="form-error" role="alert">{error}</p>}{message && <p className="form-success" role="status">{message}</p>}<form onSubmit={submit}>{isRegister && <label>Nama lengkap<input name="name" required placeholder="Nama sesuai identitas" /></label>}<label>Email<input name="email" type="email" required placeholder="nama@email.com" /></label>{isRegister && <label>Nomor WhatsApp<input name="phone" inputMode="tel" required placeholder="08xxxxxxxxxx" /></label>}<label>Kata sandi<input name="password" type="password" required minLength={8} placeholder="Minimal 8 karakter" /></label>{!isRegister && <div className="auth-helper"><label><input type="checkbox" /> Ingat saya</label><Link href="/login?forgot=1">Lupa kata sandi?</Link></div>}{isRegister && <label className="auth-check"><input type="checkbox" required /><span>Saya menyetujui syarat layanan dan kebijakan privasi HOP & HAM.</span></label>}<button className="button button--solid" disabled={loading}>{loading ? "Memproses…" : isRegister ? "Buat akun" : "Masuk"}</button></form><p className="auth-switch">{isRegister ? "Sudah punya akun?" : "Belum punya akun?"} <Link href={isRegister ? "/login" : "/register"}>{isRegister ? "Masuk" : "Daftar sekarang"}</Link></p></div></section>
+    </main>
+  );
+}
