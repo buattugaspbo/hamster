@@ -70,6 +70,8 @@ Import repository sebagai project Next.js di Vercel. Tambahkan variabel berikut 
 
 Build command: `npm run build`. Output directory tidak perlu diisi karena Vercel mengenali Next.js secara otomatis.
 
+Repo juga menyertakan `vercel.json` yang memaksa preset Next.js dan mengosongkan override output directory. Integrasi Supabase Marketplace didukung melalui nama variabel publishable/anon/secret bawaannya.
+
 Setelah domain produksi tersedia, perbarui `NEXT_PUBLIC_SITE_URL` dan konfigurasi redirect Supabase, lalu redeploy.
 
 ## 5. Checklist produksi
