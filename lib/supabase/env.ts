@@ -1,7 +1,12 @@
 export function hasSupabaseEnv() {
   return Boolean(
-    process.env.NEXT_PUBLIC_SUPABASE_URL && getSupabasePublicKey(),
+    getSupabaseUrl() && getSupabasePublicKey(),
   );
+}
+
+export function getSupabaseUrl() {
+  return process.env.NEXT_PUBLIC_SUPABASE_URL
+    || process.env.SUPABASE_URL;
 }
 
 function getSupabasePublicKey() {
@@ -11,7 +16,7 @@ function getSupabasePublicKey() {
 }
 
 export function requireSupabasePublicEnv() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const url = getSupabaseUrl();
   const key = getSupabasePublicKey();
   if (!url || !key) {
     throw new Error("Supabase belum dikonfigurasi. Isi URL dan publishable/anon key Supabase.");
