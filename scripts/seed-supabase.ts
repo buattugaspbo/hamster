@@ -1,5 +1,12 @@
+import { createClient } from "@supabase/supabase-js";
 import { allItems } from "../lib/data";
-import { createAdminClient } from "../lib/supabase/admin";
+
+function createSeedClient() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SECRET_KEY;
+  if (!url || !key) throw new Error("URL dan secret/service-role key Supabase belum tersedia.");
+  return createClient(url, key, { auth: { autoRefreshToken: false, persistSession: false } });
+}
 
 async function main() {
   const rows = allItems.map((item) => ({
@@ -10,7 +17,7 @@ async function main() {
     description: item.description, featured: item.featured ?? false,
     weight_grams: item.weightGrams ?? null, dimensions: item.dimensions ?? null,
   }));
-  const { error } = await createAdminClient().from("products").upsert(rows, { onConflict: "id" });
+  const { error } = await createSeedClient().from("products").upsert(rows, { onConflict: "id" });
   if (error) throw error;
   console.log(`Seed selesai: ${rows.length} produk tersimpan di Supabase.`);
 }

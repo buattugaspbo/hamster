@@ -37,9 +37,9 @@ export function ShopClient({ items }: { items: CatalogItem[] }) {
     <div className="shop-layout content-shell">
       <div className="shop-title-row">
         <div>
-          <p className="eyebrow">STOK DIPERBARUI SETIAP HARI</p>
-          <h1>{type === "Perlengkapan" ? "Perlengkapan yang tepat" : "Hewan yang tersedia"}</h1>
-          <p>{filtered.length} item tersedia di toko Palembang</p>
+          <p className="eyebrow">KATALOG TOKO</p>
+          <h1>{type === "Perlengkapan" ? "Perlengkapan" : "Hamster & kelinci yang tersedia"}</h1>
+          <p>{filtered.length} item ada di toko Palembang</p>
         </div>
         <label className="search-field">
           <span>⌕</span>

@@ -9,7 +9,7 @@ export function BrandLogo({ compact = false }: { compact?: boolean }) {
         <path d="M40 19c-1.5-4 .1-7.5 3.1-8.4 2.4 3 2.1 6.4-.7 9M47 20c.2-4.4 2.5-7.1 5.6-7.1 1.5 3.5.2 6.4-3.2 8" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
         <circle cx="32" cy="49" r="1.8" fill="currentColor" />
       </svg>
-      {!compact && <span className="brand-logo__type"><strong>HOP <i>&</i> HAM</strong><small>ANIMAL & HABITAT BOUTIQUE</small></span>}
+      {!compact && <span className="brand-logo__type"><strong>HOP <i>&</i> HAM</strong><small>HAMSTER · KELINCI · PERLENGKAPAN</small></span>}
     </Link>
   );
 }

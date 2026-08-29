@@ -8,7 +8,7 @@ export function Footer() {
         <BrandLogo compact />
         <div>
           <h3>HOP & HAM</h3>
-          <p>Teman kecil dirawat dengan hormat, kesabaran, dan kasih.</p>
+          <p>Toko hamster, kelinci, dan perlengkapannya di Palembang.</p>
         </div>
       </div>
       <div>

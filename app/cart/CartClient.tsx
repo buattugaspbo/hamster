@@ -36,12 +36,12 @@ export function CartClient() {
 
   if (loading) return <div className="empty-cart content-shell"><p>Menyiapkan keranjang…</p></div>;
   if (items.length === 0) {
-    return <div className="empty-cart content-shell"><p className="eyebrow">KERANJANG</p><h1>Keranjangmu masih kosong.</h1><p>Mulai dari habitat, pakan, atau starter kit yang sudah kami kurasi.</p><Link href="/shop?type=Perlengkapan" className="button button--solid">Lihat perlengkapan</Link></div>;
+    return <div className="empty-cart content-shell"><p className="eyebrow">KERANJANG</p><h1>Keranjangmu masih kosong.</h1><p>Cari kandang, pakan, atau perlengkapan lain di katalog.</p><Link href="/shop?type=Perlengkapan" className="button button--solid">Lihat perlengkapan</Link></div>;
   }
 
   return (
     <div className="cart-page content-shell">
-      <div><p className="eyebrow">KERANJANG</p><h1>Perlengkapan pilihanmu</h1></div>
+      <div><p className="eyebrow">KERANJANG</p><h1>Isi keranjang</h1></div>
       <div className="cart-grid">
         <section className="cart-list">
           {items.map(({ product, quantity }) => (
@@ -55,7 +55,7 @@ export function CartClient() {
         <aside className="cart-summary">
           <h2>Ringkasan</h2><div><span>Subtotal</span><strong>{formatRupiah(total)}</strong></div><div><span>Pengiriman</span><strong>Dihitung di checkout</strong></div><div className="cart-total"><span>Total sementara</span><strong>{formatRupiah(total)}</strong></div>
           <Link href="/checkout" className="button button--solid">Lanjut ke checkout</Link>
-          <small>Harga dan stok akan divalidasi ulang oleh server sebelum pesanan dibuat.</small>
+          <small>Harga dan stok dicek lagi saat pesanan dibuat.</small>
         </aside>
       </div>
     </div>

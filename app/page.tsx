@@ -19,8 +19,8 @@ export default async function Home() {
       <section className="home-stock content-shell">
         <div className="section-heading section-heading--split">
           <div>
-            <p className="eyebrow">DIPOTRET LANGSUNG DI TOKO</p>
-            <h2>Baru tiba minggu ini</h2>
+            <p className="eyebrow">PILIHAN MINGGU INI</p>
+            <h2>Yang lagi ada di toko</h2>
           </div>
           <Link href="/shop" className="text-link">Lihat semua hewan →</Link>
         </div>
@@ -30,27 +30,27 @@ export default async function Home() {
       </section>
 
       <section className="trust-band">
-        <div><b>01</b><h3>Pemeriksaan kondisi</h3><p>Setiap hewan diperiksa sebelum ditampilkan sebagai tersedia.</p></div>
-        <div><b>02</b><h3>Foto dan video aktual</h3><p>Lihat kondisi terbaru, bukan foto katalog yang digunakan berulang.</p></div>
-        <div><b>03</b><h3>Dukungan setelah pembelian</h3><p>Konsultasi perawatan tetap tersedia setelah hewan dibawa pulang.</p></div>
+        <div><b>01</b><h3>Dicek sebelum tayang</h3><p>Kami cek makan, gerak, kulit, dan bulunya sebelum statusnya dibuat tersedia.</p></div>
+        <div><b>02</b><h3>Foto stok yang sekarang</h3><p>Foto di profil adalah hewan yang sedang ada, bukan gambar contoh dari internet.</p></div>
+        <div><b>03</b><h3>Masih bisa tanya setelah beli</h3><p>Kalau bingung soal pakan atau adaptasi di rumah, chat saja lewat WhatsApp.</p></div>
       </section>
 
       <section className="supplies-feature content-shell">
         <div className="section-heading">
-          <p className="eyebrow">HABITAT YANG LAYAK, BUKAN SEKADAR LUCU</p>
-          <h2>Perlengkapan untuk hidup yang lebih baik</h2>
-          <p>Habitat luas, pakan seimbang, enrichment, dan kebutuhan perawatan yang dipilih sesuai jenis hewan.</p>
+          <p className="eyebrow">KEBUTUHAN HARIAN</p>
+          <h2>Kandang, pakan, dan perlengkapan</h2>
+          <p>Mulai dari bedding sampai carrier. Pilih per kategori atau tanya kami kalau belum yakin ukurannya.</p>
         </div>
         <div className="featured-grid featured-grid--products">
           {supplies.filter((item) => item.featured).map((item) => <ProductCard item={item} key={item.id} />)}
         </div>
-        <Link href="/shop?type=Perlengkapan" className="button button--solid button--center">Jelajahi semua perlengkapan</Link>
+        <Link href="/shop?type=Perlengkapan" className="button button--solid button--center">Lihat semua perlengkapan</Link>
       </section>
 
       <section className="visit-strip" id="lokasi">
         <div>
-          <p className="eyebrow">HOP & HAM · PALEMBANG</p>
-          <h2>Datang, lihat kondisi mereka secara langsung.</h2>
+          <p className="eyebrow">TOKO PALEMBANG</p>
+          <h2>Kalau mau lihat langsung, mampir aja.</h2>
         </div>
         <div className="visit-details">
           <span>Senin–Sabtu</span>

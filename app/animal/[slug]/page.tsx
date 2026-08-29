@@ -21,7 +21,7 @@ export default async function AnimalDetailPage({ params }: { params: Promise<{ s
             <div className="detail-main-image">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={item.image} alt={`${item.name}, ${item.breed}`} />
-              <span className="camera-note">Foto kondisi terbaru · 24 Agustus</span>
+              <span className="camera-note">Foto stok saat ini</span>
             </div>
             <div className="detail-thumbnails">
               {[item.image, item.image, item.image].map((image, index) => (
@@ -47,17 +47,17 @@ export default async function AnimalDetailPage({ params }: { params: Promise<{ s
             </div>
             <div className="health-panel">
               <h2>Catatan kondisi</h2>
-              <div><span>✓</span><p><strong>Sudah diperiksa</strong><small>Pemeriksaan kondisi umum</small></p></div>
-              <div><span>✓</span><p><strong>Bebas kutu</strong><small>Bulu dan kulit bersih</small></p></div>
-              <div><span>✓</span><p><strong>Nafsu makan baik</strong><small>Aktif dan responsif</small></p></div>
+              <div><span>✓</span><p><strong>Kondisi umum sudah dicek</strong><small>Gerak dan responsnya normal</small></p></div>
+              <div><span>✓</span><p><strong>Kulit dan bulu bersih</strong><small>Tidak ada kutu yang terlihat</small></p></div>
+              <div><span>✓</span><p><strong>Makan dengan baik</strong><small>Jadwal makan teratur</small></p></div>
             </div>
             <ReserveActions item={item} />
           </section>
         </div>
         <div className="detail-notes">
-          <article><h2>Tentang {item.name}</h2><p>{item.description} Tim kami akan menjelaskan kebiasaan makan dan rutinitasnya sebelum pengambilan.</p></article>
-          <article><h2>Riwayat kesehatan</h2><p>Catatan kondisi diperbarui oleh tim perawatan dan dapat dikonfirmasi kembali melalui WhatsApp.</p></article>
-          <article><h2>Cara perawatan</h2><p>Gunakan habitat yang cukup luas, sediakan pakan sesuai jenis, air bersih, dan waktu adaptasi tanpa paksaan.</p></article>
+          <article><h2>Tentang {item.name}</h2><p>{item.description} Sebelum diambil, kami jelaskan jadwal makan dan kebiasaannya sehari-hari.</p></article>
+          <article><h2>Catatan terbaru</h2><p>Kalau mau memastikan kondisinya sebelum reservasi, chat kami lewat WhatsApp.</p></article>
+          <article><h2>Sebelum dibawa pulang</h2><p>Siapkan kandang, pakan, dan air bersih lebih dulu. Setelah sampai rumah, beri waktu untuk beradaptasi tanpa sering dipegang.</p></article>
         </div>
       </div>
       <Footer />

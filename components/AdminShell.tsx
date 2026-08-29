@@ -26,7 +26,7 @@ export function AdminShell({ children, name }: { children: ReactNode; name: stri
         <div className="admin-profile"><span>{initials}</span><div><strong>{name}</strong><small>Administrator</small></div></div>
       </aside>
       <div className="admin-main">
-        <header className="admin-topbar"><button onClick={() => setOpen((value) => !value)}>☰</button><div><strong>Selamat datang, {name}</strong><span>{new Intl.DateTimeFormat("id-ID", { dateStyle: "full" }).format(new Date())}</span></div><div className="admin-top-actions"><span className="notification">3</span><b>{initials}</b></div></header>
+        <header className="admin-topbar"><button onClick={() => setOpen((value) => !value)}>☰</button><div><strong>Halo, {name}</strong><span>{new Intl.DateTimeFormat("id-ID", { dateStyle: "full" }).format(new Date())}</span></div><div className="admin-top-actions"><span className="notification">3</span><b>{initials}</b></div></header>
         {children}
       </div>
     </div>

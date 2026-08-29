@@ -8,7 +8,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build --webpack",
-    "db:seed": "tsx scripts/seed-supabase.ts",
+    "db:seed": "tsx --env-file=.env.local scripts/seed-supabase.ts",
     "start": "next start",
     "test": "tsx --test tests/*.test.ts",
     "lint": "eslint app components lib scripts tests proxy.ts next.config.ts"
