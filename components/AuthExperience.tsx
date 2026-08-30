@@ -23,7 +23,7 @@ export function AuthExperience({ mode }: { mode: "login" | "register" }) {
     event.preventDefault(); setLoading(true); setError(""); setMessage("");
     const form = new FormData(event.currentTarget);
     try {
-      const supabase = createClient();
+      const supabase = await createClient();
       if (isRegister) {
         const { data, error: authError } = await supabase.auth.signUp({
           email: String(form.get("email")), password: String(form.get("password")),
