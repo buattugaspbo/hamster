@@ -23,14 +23,6 @@ export default async function AnimalDetailPage({ params }: { params: Promise<{ s
               <img src={item.image} alt={`${item.name}, ${item.breed}`} />
               <span className="camera-note">Foto stok saat ini</span>
             </div>
-            <div className="detail-thumbnails">
-              {[item.image, item.image, item.image].map((image, index) => (
-                <button key={index} className={index === 0 ? "active" : ""} aria-label={`Lihat foto ${index + 1}`}>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}<img src={image} alt="" />
-                </button>
-              ))}
-              <button className="video-thumb">▶<small>Video 00:18</small></button>
-            </div>
           </section>
           <section className="detail-info">
             <div className="availability"><i /> {item.status}</div>
