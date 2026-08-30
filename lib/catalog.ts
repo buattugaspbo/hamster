@@ -1,6 +1,7 @@
 import "server-only";
 import { allItems, type CatalogItem } from "./data";
 import { createAdminClient, hasSupabaseAdminEnv } from "./supabase/admin";
+import { replenishLowStock } from "./restock-server";
 
 type ProductRow = Record<string, unknown>;
 
@@ -54,6 +55,7 @@ export function catalogItemToRow(item: CatalogItem) {
 
 export async function getCatalog(): Promise<CatalogItem[]> {
   if (!hasSupabaseAdminEnv()) return allItems;
+  await replenishLowStock();
   const { data, error } = await createAdminClient()
     .from("products")
     .select("*")
@@ -65,6 +67,7 @@ export async function getCatalog(): Promise<CatalogItem[]> {
 
 export async function getProductBySlug(slug: string) {
   if (!hasSupabaseAdminEnv()) return allItems.find((item) => item.slug === slug) || null;
+  await replenishLowStock();
   const { data, error } = await createAdminClient()
     .from("products")
     .select("*")

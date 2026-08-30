@@ -1,6 +1,8 @@
 import { getAuthenticatedUser, isCurrentUserAdmin } from "../../../lib/auth";
 import { calculatePackingCost, canUseDelivery, describePacking } from "../../../lib/checkout";
 import { quoteShipping } from "../../../lib/shipping";
+import { automaticRestockTarget, needsAutomaticRestock } from "../../../lib/restock";
+import { replenishLowStock } from "../../../lib/restock-server";
 import { serializeOrder } from "../../../lib/serializers";
 import { createAdminClient } from "../../../lib/supabase/admin";
 import { orderInputSchema } from "../../../lib/validation";
@@ -23,13 +25,14 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const input = orderInputSchema.parse(await request.json());
+    await replenishLowStock();
     const items = Array.from(input.items.reduce((map, item) => {
       map.set(item.productId, (map.get(item.productId) || 0) + item.quantity);
       return map;
     }, new Map<string, number>()), ([product_id, quantity]) => ({ product_id, quantity }));
     const admin = createAdminClient();
     const productIds = items.map((item) => item.product_id);
-    const { data: products, error: productError } = await admin.from("products").select("id, price, stock, kind").in("id", productIds);
+    const { data: products, error: productError } = await admin.from("products").select("id, price, stock, kind, species").in("id", productIds);
     if (productError) throw productError;
     const priceById = new Map((products || []).map((product) => [String(product.id), Number(product.price)]));
     if (priceById.size !== productIds.length) return Response.json({ error: "Ada produk yang tidak ditemukan" }, { status: 422 });
@@ -68,6 +71,19 @@ export async function POST(request: Request) {
       const requested = items.find((item) => item.product_id === String(product.id))?.quantity || 0;
       const remaining = Math.max(0, Number(product.stock) - requested);
       await admin.from("products").update({ status: remaining === 0 ? "Stok habis" : remaining <= 5 ? "Stok menipis" : "Tersedia" }).eq("id", product.id);
+    }));
+    // Isi ulang langsung ketika sisa stok sudah 0 atau 1. Restock dilakukan
+    // setelah transaksi tercatat agar pesanan yang sedang dibuat tetap sah.
+    await Promise.all((products || []).flatMap((product) => {
+      const requested = items.find((item) => item.product_id === String(product.id))?.quantity || 0;
+      const restockable = {
+        id: String(product.id),
+        kind: product.kind === "animal" ? "animal" as const : "supply" as const,
+        species: product.species == null ? null : String(product.species),
+        stock: Number(product.stock),
+      };
+      if (!needsAutomaticRestock(restockable, requested)) return [];
+      return [admin.from("products").update({ stock: automaticRestockTarget(restockable), status: "Tersedia" }).eq("id", product.id)];
     }));
     const row = (Array.isArray(data) ? data[0] : data) as Record<string, unknown>;
     return Response.json({ order: serializeOrder(row), paymentToken: row.payment_token }, { status: 201 });

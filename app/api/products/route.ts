@@ -2,10 +2,12 @@ import { allItems } from "../../../lib/data";
 import { isCurrentUserAdmin } from "../../../lib/auth";
 import { serializeProduct } from "../../../lib/serializers";
 import { createAdminClient, hasSupabaseAdminEnv } from "../../../lib/supabase/admin";
+import { replenishLowStock } from "../../../lib/restock-server";
 import { productInputSchema } from "../../../lib/validation";
 
 export async function GET() {
   if (!hasSupabaseAdminEnv()) return Response.json({ products: allItems, source: "fallback" });
+  await replenishLowStock();
   const { data, error } = await createAdminClient().from("products").select("*").order("kind").order("name");
   if (error) return Response.json({ error: error.message }, { status: 500 });
   return Response.json({ products: (data || []).map(serializeProduct), source: "supabase" });
