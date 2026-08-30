@@ -11,6 +11,11 @@ function safeNextPath() {
   return value.startsWith("/") && !value.startsWith("//") ? value : "/account";
 }
 
+const isEmailNotConfirmed = (reason: unknown) => {
+  const message = reason instanceof Error ? reason.message : String(reason || "");
+  return /email.*not.*confirm|email_not_confirmed/i.test(message);
+};
+
 export function AuthExperience({ mode }: { mode: "login" | "register" }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -24,9 +29,28 @@ export function AuthExperience({ mode }: { mode: "login" | "register" }) {
     const form = new FormData(event.currentTarget);
     try {
       const supabase = await createClient();
+      const email = String(form.get("email"));
+      const password = String(form.get("password"));
+      const activateWithoutEmail = async () => {
+        const response = await fetch("/api/auth/activate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password }),
+        });
+        const payload = await response.json() as { error?: string };
+        if (!response.ok) throw new Error(payload.error || "Akun belum bisa diaktifkan.");
+      };
+      const signIn = async () => {
+        let { error: authError } = await supabase.auth.signInWithPassword({ email, password });
+        if (authError && isEmailNotConfirmed(authError)) {
+          await activateWithoutEmail();
+          ({ error: authError } = await supabase.auth.signInWithPassword({ email, password }));
+        }
+        if (authError) throw authError;
+      };
       if (isRegister) {
         const { data, error: authError } = await supabase.auth.signUp({
-          email: String(form.get("email")), password: String(form.get("password")),
+          email, password,
           options: {
             emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(safeNextPath())}`,
             data: { full_name: String(form.get("name")), phone: String(form.get("phone")) },
@@ -34,15 +58,12 @@ export function AuthExperience({ mode }: { mode: "login" | "register" }) {
         });
         if (authError) throw authError;
         if (!data.session) {
-          setMessage("Akun dibuat. Periksa email untuk mengaktifkan akunmu.");
-          return;
+          await activateWithoutEmail();
         }
       } else {
-        const { error: authError } = await supabase.auth.signInWithPassword({
-          email: String(form.get("email")), password: String(form.get("password")),
-        });
-        if (authError) throw authError;
+        await signIn();
       }
+      if (isRegister) await signIn();
       router.push(safeNextPath()); router.refresh();
     } catch (reason) {
       const detail = reason instanceof Error ? reason.message : "";
