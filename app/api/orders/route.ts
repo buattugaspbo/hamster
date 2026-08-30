@@ -38,8 +38,10 @@ export async function POST(request: Request) {
     if (isDelivery && !canUseDelivery(subtotal)) {
       return Response.json({ error: "Minimal belanja untuk pengantaran adalah Rp100.000" }, { status: 422 });
     }
-    const quote = isDelivery ? quoteShipping(input.regencyCode) : null;
-    if (isDelivery && !quote) return Response.json({ error: "Kota tujuan belum dapat dihitung ongkirnya" }, { status: 422 });
+    const quote = isDelivery ? quoteShipping(input.regencyCode, input.districtCode) : null;
+    if (isDelivery && (!input.shippingAddress || !quote)) {
+      return Response.json({ error: "Alamat lengkap dan kecamatan yang dikenali diperlukan untuk menghitung ongkir." }, { status: 422 });
+    }
     const packingCost = calculatePackingCost(input.type, input.deliveryMethod, input.packingType);
     const packingNote = isDelivery ? `Pengantaran · ${describePacking(input.type, input.packingType)}` : "Ambil di toko";
     const notes = [packingNote, input.notes].filter(Boolean).join(". ");

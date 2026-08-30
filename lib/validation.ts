@@ -39,6 +39,7 @@ export const orderInputSchema = z.object({
   notes: z.string().trim().max(2000).optional().default(""),
   shippingAddress: z.string().trim().max(1000).optional().default(""),
   regencyCode: z.string().trim().max(20).optional().default(""),
+  districtCode: z.string().trim().max(20).optional().default(""),
 });
 
 export const orderPatchSchema = z.object({

@@ -5,7 +5,7 @@ Checkout sudah memanggil endpoint internal, bukan vendor secara langsung:
 - `GET /api/regions?level=province`
 - `GET /api/regions?level=regency&parent=16`
 - `GET /api/regions?level=district&parent=1671`
-- `POST /api/shipping/quote` dengan JSON `{ "regencyCode": "3273" }`
+- `POST /api/shipping/quote` dengan JSON `{ "regencyCode": "1671", "districtCode": "167101" }`
 
 Tanpa konfigurasi apa pun, endpoint wilayah memakai dataset fallback di `lib/regions.ts`. Untuk vendor API pilihan Anda, isi:
 

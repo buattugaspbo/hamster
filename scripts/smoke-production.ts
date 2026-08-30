@@ -56,6 +56,7 @@ async function main() {
         pickupAt: new Date(Date.now() + 86_400_000).toISOString(),
         shippingAddress: "AUTOMATED SMOKE TEST — DELETE ME",
         regencyCode: "1671",
+        districtCode: "167101",
         notes: "AUTOMATED_SMOKE_TEST_DELETE_ME",
       }),
     }));

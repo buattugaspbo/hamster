@@ -45,12 +45,12 @@ export const regencies: RegionOption[] = [
 ];
 
 export const districts: RegionOption[] = [
-  { code: "167101", parentCode: "1671", name: "Ilir Barat I" },
-  { code: "167102", parentCode: "1671", name: "Ilir Barat II" },
-  { code: "167103", parentCode: "1671", name: "Ilir Timur I" },
-  { code: "167104", parentCode: "1671", name: "Ilir Timur II" },
-  { code: "167105", parentCode: "1671", name: "Sukarami" },
-  { code: "167106", parentCode: "1671", name: "Kemuning" },
+  { code: "167101", parentCode: "1671", name: "Ilir Barat I", latitude: -2.9925, longitude: 104.7376 },
+  { code: "167102", parentCode: "1671", name: "Ilir Barat II", latitude: -2.9821, longitude: 104.7213 },
+  { code: "167103", parentCode: "1671", name: "Ilir Timur I", latitude: -2.9892, longitude: 104.7705 },
+  { code: "167104", parentCode: "1671", name: "Ilir Timur II", latitude: -2.9562, longitude: 104.7864 },
+  { code: "167105", parentCode: "1671", name: "Sukarami", latitude: -2.9052, longitude: 104.7357 },
+  { code: "167106", parentCode: "1671", name: "Kemuning", latitude: -2.9734, longitude: 104.7654 },
 ];
 
 export function fallbackRegions(level: string, parentCode?: string) {

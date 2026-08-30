@@ -1,19 +1,26 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 import { CatalogItem } from "../../../lib/data";
 import { createWhatsAppUrl } from "../../../lib/contact";
+import { addCartItem } from "../../../lib/cart";
 
 export function ReserveActions({ item }: { item: CatalogItem }) {
-  const saveReservation = () => {
-    localStorage.setItem("hop-reservation", item.id);
+  const [added, setAdded] = useState(false);
+
+  const addToCart = () => {
+    addCartItem(item.id);
+    setAdded(true);
+    window.setTimeout(() => setAdded(false), 1800);
   };
 
   return (
     <div className="detail-actions">
-      <Link href={`/checkout?animal=${item.id}`} onClick={saveReservation} className="button button--solid">Reservasi {item.name}</Link>
+      <Link href={`/checkout?animal=${item.id}`} className="button button--solid">Pesan langsung</Link>
       <a href={createWhatsAppUrl(`Halo HOP & HAM, saya ingin bertanya tentang ${item.name} (${item.code}).`)} className="button button--outline">Tanya via WhatsApp</a>
-      <small>Setelah dikonfirmasi, stok kami tahan 2 jam sambil menunggu pembayaran.</small>
+      <button type="button" className="detail-cart-action" onClick={addToCart}>{added ? "✓ Masuk keranjang" : "+ Tambah ke keranjang"}</button>
+      <small>Hewan di keranjang tetap diproses dengan pilihan jadwal dan packing yang aman.</small>
     </div>
   );
 }

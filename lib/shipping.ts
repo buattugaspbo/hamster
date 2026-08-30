@@ -1,4 +1,4 @@
-import { regencies } from "./regions";
+import { districts, regencies } from "./regions";
 
 export const STORE_LOCATION = {
   code: "1671",
@@ -33,20 +33,23 @@ export function calculateShippingCost(distanceKm: number) {
   return Math.round(cost / SHIPPING_ROUNDING) * SHIPPING_ROUNDING;
 }
 
-export function quoteShipping(regencyCode: string) {
+export function quoteShipping(regencyCode: string, districtCode?: string) {
   const destination = regencies.find((region) => region.code === regencyCode);
   if (!destination?.latitude || !destination.longitude) return null;
+  const district = districtCode ? districts.find((region) => region.code === districtCode && region.parentCode === regencyCode) : null;
+  if (districtCode && (!district?.latitude || !district.longitude)) return null;
+  const endpoint = district || destination;
   const rawDistance = haversineDistanceKm(STORE_LOCATION, {
-    latitude: destination.latitude,
-    longitude: destination.longitude,
+    latitude: endpoint.latitude!,
+    longitude: endpoint.longitude!,
   });
   const distanceKm = Math.round(rawDistance);
   return {
     origin: STORE_LOCATION,
-    destination,
+    destination: endpoint,
     distanceKm,
     cost: calculateShippingCost(distanceKm),
     ratePerKm: SHIPPING_RATE_PER_KM,
-    calculation: "haversine",
+    calculation: district ? "district-centroid-haversine" : "regency-centroid-haversine",
   };
 }

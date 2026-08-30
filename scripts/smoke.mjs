@@ -18,7 +18,7 @@ if (!Array.isArray(productPayload.products) || productPayload.products.length < 
 const shipping = await check("shipping", "/api/shipping/quote", {
   method: "POST",
   headers: { "content-type": "application/json" },
-  body: JSON.stringify({ regencyCode: "3273" }),
+  body: JSON.stringify({ regencyCode: "1671", districtCode: "167101" }),
 });
 const shippingPayload = await shipping.json();
 if (!shippingPayload.quote || shippingPayload.quote.cost < 10000) throw new Error("shipping: hasil tidak valid");
