@@ -7,8 +7,8 @@ export const STORE_LOCATION = {
   longitude: 104.7754,
 };
 
-export const SHIPPING_RATE_PER_KM = 49;
-export const BASE_SHIPPING_COST = 10000;
+export const SHIPPING_RATE_PER_KM = 100;
+export const BASE_SHIPPING_COST = 15000;
 export const SHIPPING_ROUNDING = 500;
 
 const toRadians = (degrees: number) => degrees * (Math.PI / 180);

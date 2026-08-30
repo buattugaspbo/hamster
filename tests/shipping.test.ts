@@ -2,12 +2,12 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { calculateShippingCost, quoteShipping } from "../lib/shipping";
 
-test("ongkir memiliki biaya dasar Rp10.000", () => {
-  assert.equal(calculateShippingCost(0), 10000);
+test("ongkir memiliki biaya dasar Rp15.000", () => {
+  assert.equal(calculateShippingCost(0), 15000);
 });
 
-test("ongkir menambahkan Rp49 per kilometer lalu membulatkan Rp500", () => {
-  assert.equal(calculateShippingCost(500), 34500);
+test("ongkir menambahkan Rp100 per kilometer lalu membulatkan Rp500", () => {
+  assert.equal(calculateShippingCost(500), 65000);
 });
 
 test("ongkir pengantaran memakai kecamatan yang cocok dengan kota", () => {

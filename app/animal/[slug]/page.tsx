@@ -27,13 +27,13 @@ export default async function AnimalDetailPage({ params }: { params: Promise<{ s
           <section className="detail-info">
             <div className="availability"><i /> {item.status}</div>
             <h1>{item.name}</h1>
-            <p className="detail-subtitle">{item.species} {item.breed} · {item.sex} · {item.age}</p>
+            <p className="detail-subtitle">{item.species} {item.breed} · Jantan & Betina · {item.age}</p>
             <strong className="detail-price">{formatRupiah(item.price)}</strong>
             <span className="detail-code">{item.code}</span>
             <p className="detail-description">{item.description}</p>
             <div className="animal-facts">
               <div><span>Usia</span><strong>{item.age}</strong></div>
-              <div><span>Jenis kelamin</span><strong>{item.sex}</strong></div>
+              <div><span>Jenis kelamin</span><strong>Jantan & Betina</strong></div>
               <div><span>Karakter</span><strong>{item.temperament}</strong></div>
               <div><span>Lokasi</span><strong>Palembang</strong></div>
             </div>

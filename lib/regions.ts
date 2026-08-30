@@ -2,6 +2,7 @@ export type RegionOption = {
   code: string;
   name: string;
   parentCode?: string;
+  postalCode?: string;
   latitude?: number;
   longitude?: number;
 };
@@ -51,11 +52,19 @@ export const districts: RegionOption[] = [
   { code: "167104", parentCode: "1671", name: "Ilir Timur II", latitude: -2.9562, longitude: 104.7864 },
   { code: "167105", parentCode: "1671", name: "Sukarami", latitude: -2.9052, longitude: 104.7357 },
   { code: "167106", parentCode: "1671", name: "Kemuning", latitude: -2.9734, longitude: 104.7654 },
+  { code: "167107", parentCode: "1671", name: "Plaju", latitude: -3.0219, longitude: 104.7897 },
+];
+
+export const villages: RegionOption[] = [
+  { code: "1671071001", parentCode: "167107", name: "Plaju Ulu", postalCode: "30266", latitude: -3.0219, longitude: 104.7897 },
+  { code: "1671071002", parentCode: "167107", name: "Bagus Kuning", postalCode: "30267", latitude: -3.0251, longitude: 104.7839 },
+  { code: "1671071003", parentCode: "167107", name: "Talang Putri", postalCode: "30267", latitude: -3.0177, longitude: 104.795 },
 ];
 
 export function fallbackRegions(level: string, parentCode?: string) {
   if (level === "province") return provinces;
   if (level === "regency") return regencies.filter((region) => !parentCode || region.parentCode === parentCode);
   if (level === "district") return districts.filter((region) => !parentCode || region.parentCode === parentCode);
+  if (level === "village") return villages.filter((region) => !parentCode || region.parentCode === parentCode);
   return [];
 }

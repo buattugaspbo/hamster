@@ -32,6 +32,7 @@ export const orderInputSchema = z.object({
   items: z.array(z.object({
     productId: z.string().trim().min(1).max(100),
     quantity: z.coerce.number().int().min(1).max(20),
+    sex: z.enum(["Jantan", "Betina"]).optional(),
   })).min(1).max(30),
   pickupAt: z.string().datetime({ offset: true }),
   deliveryMethod: z.enum(["pickup", "delivery"]).default("pickup"),

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import type { CatalogItem } from "../../lib/data";
-import { formatRupiah } from "../../lib/data";
+import { formatRupiah, getAnimalSexStock } from "../../lib/data";
 import { readCart, writeCart, type CartEntry } from "../../lib/cart";
 
 export function CartClient() {
@@ -22,14 +22,16 @@ export function CartClient() {
 
   const items = useMemo(() => entries.flatMap((entry) => {
     const product = products.find((item) => item.id === entry.id);
-    return product ? [{ product, quantity: Math.min(entry.quantity, Math.max(product.stock, 1)) }] : [];
+    if (!product) return [];
+    const maximum = entry.sex ? getAnimalSexStock(product, entry.sex) : product.stock;
+    return [{ product, sex: entry.sex, quantity: Math.min(entry.quantity, Math.max(maximum, 1)), maximum }];
   }), [entries, products]);
   const total = items.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
 
-  const updateQuantity = (id: string, quantity: number) => {
+  const updateQuantity = (id: string, quantity: number, sex?: CartEntry["sex"]) => {
     const next = quantity < 1
-      ? entries.filter((entry) => entry.id !== id)
-      : entries.map((entry) => entry.id === id ? { ...entry, quantity } : entry);
+      ? entries.filter((entry) => entry.id !== id || entry.sex !== sex)
+      : entries.map((entry) => entry.id === id && entry.sex === sex ? { ...entry, quantity } : entry);
     setEntries(next);
     writeCart(next);
   };
@@ -44,11 +46,11 @@ export function CartClient() {
       <div><p className="eyebrow">KERANJANG</p><h1>Isi keranjang</h1></div>
       <div className="cart-grid">
         <section className="cart-list">
-          {items.map(({ product, quantity }) => (
-            <article key={product.id}>
+          {items.map(({ product, quantity, maximum, sex }) => (
+            <article key={`${product.id}-${sex || "default"}`}>
               {/* eslint-disable-next-line @next/next/no-img-element */}<img src={product.image} alt={product.name} />
-              <div><span>{product.category}</span><h2>{product.name}</h2><p>{product.description}</p><strong>{formatRupiah(product.price * quantity)}</strong><label className="cart-quantity">Jumlah<input aria-label={`Jumlah ${product.name}`} type="number" min={1} max={product.stock} value={quantity} onChange={(event) => updateQuantity(product.id, Number(event.target.value))} /></label></div>
-              <button onClick={() => updateQuantity(product.id, 0)}>Hapus</button>
+              <div><span>{product.category}{sex ? ` · ${sex}` : ""}</span><h2>{product.name}</h2><p>{product.description}</p><strong>{formatRupiah(product.price * quantity)}</strong><label className="cart-quantity">Jumlah<button type="button" aria-label={`Kurangi ${product.name}`} disabled={quantity <= 1} onClick={() => updateQuantity(product.id, quantity - 1, sex)}>−</button><input aria-label={`Jumlah ${product.name}`} type="number" min={1} max={maximum} value={quantity} onChange={(event) => updateQuantity(product.id, Math.min(maximum, Math.max(1, Number(event.target.value) || 1)), sex)} /><button type="button" aria-label={`Tambah ${product.name}`} disabled={quantity >= maximum} onClick={() => updateQuantity(product.id, quantity + 1, sex)}>+</button></label></div>
+              <button onClick={() => updateQuantity(product.id, 0, sex)}>Hapus</button>
             </article>
           ))}
         </section>

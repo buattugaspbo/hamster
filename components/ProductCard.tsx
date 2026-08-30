@@ -7,6 +7,7 @@ import { useState } from "react";
 
 export function ProductCard({ item }: { item: CatalogItem }) {
   const isAnimal = item.kind === "animal";
+  const detailHref = isAnimal ? `/animal/${item.slug}` : `/product/${item.slug}`;
   const [added, setAdded] = useState(false);
 
   const addToCart = () => {
@@ -17,7 +18,7 @@ export function ProductCard({ item }: { item: CatalogItem }) {
 
   return (
     <article className="product-card" id={item.slug}>
-      <Link href={isAnimal ? `/animal/${item.slug}` : `/shop#${item.slug}`} className="product-image-wrap">
+      <Link href={detailHref} className="product-image-wrap">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={item.image} alt={`${item.name}, ${item.breed || item.category}`} className="product-image" />
         <span className={`status-badge ${item.status !== "Tersedia" ? "status-badge--warm" : ""}`}>
@@ -28,7 +29,7 @@ export function ProductCard({ item }: { item: CatalogItem }) {
         <p className="eyebrow">{item.breed || item.category}</p>
         <div className="product-title-row">
           <h3>{item.name}</h3>
-          {isAnimal && <span>{item.sex === "Jantan" ? "♂" : "♀"}</span>}
+          {isAnimal && <span>♀ ♂</span>}
         </div>
         <p className="product-meta">
           {isAnimal ? `${item.species} · ${item.age} · ${item.code}` : item.description}
@@ -36,11 +37,9 @@ export function ProductCard({ item }: { item: CatalogItem }) {
         <div className="product-card-footer">
           <strong>{formatRupiah(item.price)}</strong>
           {isAnimal ? (
-            <Link href={`/animal/${item.slug}`} className="text-action">Lihat detail →</Link>
+            <Link href={detailHref} className="text-action">Lihat detail →</Link>
           ) : (
-            <button onClick={addToCart} className={`text-action ${added ? "is-added" : ""}`} disabled={item.stock < 1}>
-              {added ? "✓ Ditambahkan" : "+ Tambah"}
-            </button>
+            <><Link href={detailHref} className="text-action">Lihat detail →</Link><button onClick={addToCart} className={`text-action ${added ? "is-added" : ""}`} disabled={item.stock < 1}>{added ? "✓ Ditambahkan" : "+ Tambah"}</button></>
           )}
         </div>
       </div>

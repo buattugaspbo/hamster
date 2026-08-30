@@ -11,7 +11,7 @@ import {
   type PackingType,
 } from "../../lib/checkout";
 import type { CatalogItem } from "../../lib/data";
-import { formatRupiah } from "../../lib/data";
+import { formatRupiah, getAnimalSexStock, type AnimalSex } from "../../lib/data";
 import type { RegionOption } from "../../lib/regions";
 
 type ShippingQuote = {
@@ -35,6 +35,7 @@ export function CheckoutClient() {
   const params = useSearchParams();
   const router = useRouter();
   const animalId = params.get("animal");
+  const requestedSex = params.get("sex") === "Betina" ? "Betina" : "Jantan";
   const [cart, setCart] = useState<CartEntry[]>([]);
   const [products, setProducts] = useState<CatalogItem[]>([]);
   const [loading, setLoading] = useState(false);
@@ -43,13 +44,16 @@ export function CheckoutClient() {
   const [provinces, setProvinces] = useState<RegionOption[]>([]);
   const [regencies, setRegencies] = useState<RegionOption[]>([]);
   const [districts, setDistricts] = useState<RegionOption[]>([]);
+  const [villages, setVillages] = useState<RegionOption[]>([]);
   const [provinceCode, setProvinceCode] = useState("");
   const [regencyCode, setRegencyCode] = useState("");
   const [districtCode, setDistrictCode] = useState("");
+  const [villageCode, setVillageCode] = useState("");
+  const [postalCode, setPostalCode] = useState("");
   const [shippingQuote, setShippingQuote] = useState<ShippingQuote | null>(null);
   const [shippingLoading, setShippingLoading] = useState(false);
   const [deliveryMethod, setDeliveryMethod] = useState<DeliveryMethod>(animalId ? "pickup" : "delivery");
-  const [packingType, setPackingType] = useState<PackingType>(animalId ? "toples" : "standard");
+  const [packingType, setPackingType] = useState<PackingType>("toples");
 
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => setCart(readCart()));
@@ -64,24 +68,24 @@ export function CheckoutClient() {
   }, [animalId]);
 
   const selected = useMemo(() => {
-    const entries = animalId ? [{ id: animalId, quantity: 1 }] : cart;
+    const entries = animalId ? [{ id: animalId, quantity: 1, sex: requestedSex }] : cart;
     return entries.flatMap((entry) => {
       const product = products.find((item) => item.id === entry.id);
-      return product ? [{ product, quantity: entry.quantity }] : [];
+      if (!product) return [];
+      const sex: AnimalSex | undefined = product.kind === "animal" ? (entry.sex === "Betina" ? "Betina" : "Jantan") : undefined;
+      const maximum = sex ? getAnimalSexStock(product, sex) : product.stock;
+      return [{ product, sex, quantity: Math.min(entry.quantity, maximum) }];
     });
-  }, [animalId, cart, products]);
+  }, [animalId, cart, products, requestedSex]);
   const subtotal = selected.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
   const hasAnimal = selected.some(({ product }) => product.kind === "animal");
-  const orderType = hasAnimal ? "reservation" : "order";
+  const orderType = "order";
+  const packingOrderType = hasAnimal ? "reservation" : "order";
   const isDelivery = deliveryMethod === "delivery";
   const deliveryEligible = canUseDelivery(subtotal);
   const shippingCost = isDelivery ? shippingQuote?.cost || 0 : 0;
-  const packingCost = calculatePackingCost(orderType, deliveryMethod, packingType);
+  const packingCost = calculatePackingCost(packingOrderType, deliveryMethod, packingType);
   const grandTotal = subtotal + shippingCost + packingCost;
-
-  useEffect(() => {
-    if (hasAnimal && packingType === "standard") setPackingType("toples");
-  }, [hasAnimal, packingType]);
 
   const chooseDeliveryMethod = (method: DeliveryMethod) => {
     setDeliveryMethod(method);
@@ -90,12 +94,12 @@ export function CheckoutClient() {
   };
 
   const selectProvince = async (code: string) => {
-    setProvinceCode(code); setRegencyCode(""); setDistrictCode(""); setShippingQuote(null); setDistricts([]);
+    setProvinceCode(code); setRegencyCode(""); setDistrictCode(""); setVillageCode(""); setPostalCode(""); setShippingQuote(null); setDistricts([]); setVillages([]);
     setRegencies(code ? await loadRegions("regency", code) : []);
   };
 
   const selectRegency = async (code: string) => {
-    setRegencyCode(code); setDistrictCode(""); setShippingQuote(null); setShippingLoading(Boolean(code));
+    setRegencyCode(code); setDistrictCode(""); setVillageCode(""); setPostalCode(""); setShippingQuote(null); setShippingLoading(Boolean(code)); setVillages([]);
     try {
       const [districtRows] = await Promise.all([
         code ? loadRegions("district", code) : Promise.resolve([]),
@@ -109,10 +113,12 @@ export function CheckoutClient() {
   };
 
   const selectDistrict = async (code: string) => {
-    setDistrictCode(code); setShippingQuote(null); setError("");
+    setDistrictCode(code); setVillageCode(""); setPostalCode(""); setVillages([]); setShippingQuote(null); setError("");
     if (!code || !regencyCode) return;
     setShippingLoading(true);
     try {
+      const villageRows = await loadRegions("village", code);
+      setVillages(villageRows);
       const response = await fetch("/api/shipping/quote", {
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ regencyCode, districtCode: code }),
@@ -127,12 +133,18 @@ export function CheckoutClient() {
     }
   };
 
+  const selectVillage = (code: string) => {
+    setVillageCode(code);
+    const village = villages.find((region) => region.code === code);
+    if (village?.postalCode) setPostalCode(village.postalCode);
+  };
+
   const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!selected.length || (isDelivery && (!shippingQuote || !deliveryEligible))) return;
     setLoading(true); setError("");
     const form = new FormData(event.currentTarget);
-    const destination = [form.get("address"), districts.find((region) => region.code === districtCode)?.name, regencies.find((region) => region.code === regencyCode)?.name, provinces.find((region) => region.code === provinceCode)?.name, form.get("postal")].filter(Boolean).join(", ");
+    const destination = [form.get("address"), villages.find((region) => region.code === villageCode)?.name, districts.find((region) => region.code === districtCode)?.name, regencies.find((region) => region.code === regencyCode)?.name, provinces.find((region) => region.code === provinceCode)?.name, form.get("postal")].filter(Boolean).join(", ");
     try {
       const response = await fetch("/api/orders", {
         method: "POST",
@@ -142,7 +154,7 @@ export function CheckoutClient() {
           type: orderType,
           deliveryMethod,
           packingType: hasAnimal ? packingType : "standard",
-          items: selected.map(({ product, quantity }) => ({ productId: product.id, quantity })),
+          items: selected.map(({ product, quantity, sex }) => ({ productId: product.id, quantity, sex })),
           pickupAt: `${form.get("date")}T${form.get("time")}:00+07:00`,
           shippingAddress: isDelivery ? destination : "", regencyCode: isDelivery ? regencyCode : "", districtCode: isDelivery ? districtCode : "",
           notes: form.get("notes"),
@@ -187,18 +199,19 @@ export function CheckoutClient() {
           </>}
           {isDelivery && <>
             <h2>Alamat pengiriman</h2>
-            <label>Alamat lengkap<textarea name="address" rows={3} required placeholder="Nama jalan, nomor rumah, RT/RW" /></label>
+            <label>Nama jalan / lorong dan nomor rumah<textarea name="address" rows={3} required placeholder="Contoh: Jl. DI Panjaitan, Lorong …, No. …, RT/RW" /></label>
             <div className="form-row"><label>Provinsi<select required value={provinceCode} onChange={(event) => selectProvince(event.target.value)}><option value="">Pilih provinsi</option>{provinces.map((region) => <option value={region.code} key={region.code}>{region.name}</option>)}</select></label><label>Kabupaten / kota<select required disabled={!provinceCode} value={regencyCode} onChange={(event) => selectRegency(event.target.value)}><option value="">Pilih kabupaten / kota</option>{regencies.map((region) => <option value={region.code} key={region.code}>{region.name}</option>)}</select></label></div>
-            <div className="form-row"><label>Kecamatan<select name="district" required disabled={!regencyCode || districts.length === 0} value={districtCode} onChange={(event) => void selectDistrict(event.target.value)}><option value="">{regencyCode && districts.length === 0 ? "Belum tersedia di wilayah ini" : "Pilih kecamatan"}</option>{districts.map((region) => <option value={region.code} key={region.code}>{region.name}</option>)}</select></label><label>Kode pos<input name="postal" required inputMode="numeric" pattern="[0-9]{5}" placeholder="30137" /></label></div>
+            <div className="form-row"><label>Kecamatan<select name="district" required disabled={!regencyCode || districts.length === 0} value={districtCode} onChange={(event) => void selectDistrict(event.target.value)}><option value="">{regencyCode && districts.length === 0 ? "Belum tersedia di wilayah ini" : "Pilih kecamatan"}</option>{districts.map((region) => <option value={region.code} key={region.code}>{region.name}</option>)}</select></label><label>Kelurahan<select required disabled={!districtCode || villages.length === 0} value={villageCode} onChange={(event) => selectVillage(event.target.value)}><option value="">{districtCode && villages.length === 0 ? "Belum tersedia" : "Pilih kelurahan"}</option>{villages.map((region) => <option value={region.code} key={region.code}>{region.name}</option>)}</select></label></div>
+            <label>Kode pos<input name="postal" required inputMode="numeric" pattern="[0-9]{5}" value={postalCode} onChange={(event) => setPostalCode(event.target.value)} placeholder="30266" /></label>
             {regencyCode && districts.length === 0 && <p className="delivery-warning">Pengantaran otomatis belum tersedia di kota ini karena titik kecamatannya belum terpetakan. Pilih wilayah lain atau ambil di toko.</p>}
-            <div className="shipping-calculator" aria-live="polite"><div><span>Estimasi ongkir dari toko</span>{shippingLoading ? <strong>Menghitung…</strong> : shippingQuote ? <strong>{formatRupiah(shippingQuote.cost)}</strong> : <strong>Pilih kecamatan</strong>}</div>{shippingQuote && <p>Rp10.000 + {shippingQuote.distanceKm.toLocaleString("id-ID")} km × Rp49, dibulatkan ke Rp500 terdekat.</p>}<small>Jarak otomatis dihitung dari HOP & HAM Palembang ke titik kecamatan yang dipilih.</small></div>
+            <div className="shipping-calculator" aria-live="polite"><div><span>Ongkir pengantaran</span>{shippingLoading ? <strong>Menghitung…</strong> : shippingQuote ? <strong>{formatRupiah(shippingQuote.cost)}</strong> : <strong>Pilih kecamatan</strong>}</div><small>Ongkir dihitung otomatis setelah kecamatan dipilih.</small></div>
           </>}
           <h2>{isDelivery ? "Jadwal pengiriman" : "Jadwal pengambilan"}</h2>
           <div className="form-row"><label>Pilih tanggal<input name="date" required type="date" min={new Date().toISOString().slice(0, 10)} /></label><label>Pilih waktu<select name="time" required defaultValue=""><option value="" disabled>Pilih slot</option><option>10:00</option><option>13:00</option><option>15:00</option><option>17:00</option></select></label></div>
           <label>Catatan untuk tim kami<textarea name="notes" rows={4} placeholder="Tulis catatan jika ada" /></label>
       {hasAnimal && <label className="check-line"><input type="checkbox" required /><span>Saya sudah membaca panduan perawatan dasar dan memahami cara membawa hewan dengan aman.</span></label>}
         </section>
-        <aside className="checkout-summary"><h2>Ringkasan</h2>{selected.map(({ product, quantity }) => <div className="summary-item" key={product.id}>{/* eslint-disable-next-line @next/next/no-img-element */}<img src={product.image} alt={product.name} /><div><strong>{product.name}</strong><span>{quantity} × {product.breed || product.category}</span></div><b>{formatRupiah(product.price * quantity)}</b></div>)}<div className="summary-shipping"><span>Subtotal</span><strong>{formatRupiah(subtotal)}</strong><span>{isDelivery ? "Ongkir" : "Pengambilan"}</span><strong>{isDelivery ? shippingQuote ? formatRupiah(shippingCost) : "—" : "Gratis"}</strong>{packingCost > 0 && <><span>Pelindung kayu</span><strong>{formatRupiah(packingCost)}</strong></>}</div><div className="summary-total"><span>Total</span><strong>{formatRupiah(grandTotal)}</strong></div><p className="reservation-note">Tim toko mengecek stok, packing, dan total sebelum QRIS dibuat.</p><button disabled={loading || !selected.length || (isDelivery && (!shippingQuote || !deliveryEligible))} className="button button--solid" type="submit">{loading ? "Membuat pesanan…" : "Lanjut ke pembayaran"}</button></aside>
+        <aside className="checkout-summary"><h2>Ringkasan</h2>{selected.map(({ product, quantity, sex }) => <div className="summary-item" key={`${product.id}-${sex || "default"}`}>{/* eslint-disable-next-line @next/next/no-img-element */}<img src={product.image} alt={product.name} /><div><strong>{product.name}</strong><span>{quantity} × {sex || product.breed || product.category}</span></div><b>{formatRupiah(product.price * quantity)}</b></div>)}<div className="summary-shipping"><span>Subtotal</span><strong>{formatRupiah(subtotal)}</strong><span>{isDelivery ? "Ongkir" : "Pengambilan"}</span><strong>{isDelivery ? shippingQuote ? formatRupiah(shippingCost) : "—" : "Gratis"}</strong>{packingCost > 0 && <><span>Pelindung kayu</span><strong>{formatRupiah(packingCost)}</strong></>}</div><div className="summary-total"><span>Total</span><strong>{formatRupiah(grandTotal)}</strong></div><p className="reservation-note">Tim toko mengecek stok, packing, dan total sebelum QRIS dibuat.</p><button disabled={loading || !selected.length || (isDelivery && (!shippingQuote || !deliveryEligible))} className="button button--solid" type="submit">{loading ? "Membuat pesanan…" : "Lanjut ke pembayaran"}</button></aside>
       </form>
     </div>
   );

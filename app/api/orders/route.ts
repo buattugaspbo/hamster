@@ -29,7 +29,7 @@ export async function POST(request: Request) {
     }, new Map<string, number>()), ([product_id, quantity]) => ({ product_id, quantity }));
     const admin = createAdminClient();
     const productIds = items.map((item) => item.product_id);
-    const { data: products, error: productError } = await admin.from("products").select("id, price").in("id", productIds);
+    const { data: products, error: productError } = await admin.from("products").select("id, price, stock, kind").in("id", productIds);
     if (productError) throw productError;
     const priceById = new Map((products || []).map((product) => [String(product.id), Number(product.price)]));
     if (priceById.size !== productIds.length) return Response.json({ error: "Ada produk yang tidak ditemukan" }, { status: 422 });
@@ -42,19 +42,33 @@ export async function POST(request: Request) {
     if (isDelivery && (!input.shippingAddress || !quote)) {
       return Response.json({ error: "Alamat lengkap dan kecamatan yang dikenali diperlukan untuk menghitung ongkir." }, { status: 422 });
     }
-    const packingCost = calculatePackingCost(input.type, input.deliveryMethod, input.packingType);
-    const packingNote = isDelivery ? `Pengantaran · ${describePacking(input.type, input.packingType)}` : "Ambil di toko";
-    const notes = [packingNote, input.notes].filter(Boolean).join(". ");
+    const includesAnimal = (products || []).some((product) => product.kind === "animal");
+    const packingType = includesAnimal ? "reservation" : "order";
+    const packingCost = calculatePackingCost(packingType, input.deliveryMethod, input.packingType);
+    const packingNote = isDelivery ? `Pengantaran · ${describePacking(packingType, input.packingType)}` : "Ambil di toko";
+    const sexNote = input.items.filter((item) => item.sex).map((item) => {
+      const product = (products || []).find((row) => String(row.id) === item.productId);
+      return `${product ? String(product.id) : item.productId} ${item.sex} ×${item.quantity}`;
+    }).join(", ");
+    const notes = [packingNote, sexNote ? `Pilihan kelamin: ${sexNote}` : "", input.notes].filter(Boolean).join(". ");
     const user = await getAuthenticatedUser();
     const { data, error } = await admin.rpc("create_store_order", {
       p_order_id: createOrderId(input.type), p_user_id: user?.id || null,
       p_customer_name: input.customerName, p_phone: input.phone, p_email: input.email || "",
-      p_type: input.type, p_pickup_at: input.pickupAt, p_notes: notes,
+      p_type: "order", p_pickup_at: input.pickupAt, p_notes: notes,
       p_shipping_address: isDelivery ? input.shippingAddress : "", p_regency_code: isDelivery ? input.regencyCode : "",
       p_shipping_distance_km: quote?.distanceKm ?? null, p_shipping_cost: (quote?.cost ?? 0) + packingCost,
       p_items: items,
     });
-    if (error) throw error;
+    if (error) throw new Error(`Pesanan belum bisa dibuat: ${error.message}`);
+    // Fungsi database lama menandai semua hewan sebagai "Direservasi" setelah
+    // transaksi pertama. Dengan stok per gender, barang yang masih tersisa
+    // harus tetap dapat dipesan pada transaksi berikutnya.
+    await Promise.all((products || []).filter((product) => product.kind === "animal").map(async (product) => {
+      const requested = items.find((item) => item.product_id === String(product.id))?.quantity || 0;
+      const remaining = Math.max(0, Number(product.stock) - requested);
+      await admin.from("products").update({ status: remaining === 0 ? "Stok habis" : remaining <= 5 ? "Stok menipis" : "Tersedia" }).eq("id", product.id);
+    }));
     const row = (Array.isArray(data) ? data[0] : data) as Record<string, unknown>;
     return Response.json({ order: serializeOrder(row), paymentToken: row.payment_token }, { status: 201 });
   } catch (error) {

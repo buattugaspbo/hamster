@@ -20,7 +20,7 @@ export type CatalogItem = {
   dimensions?: string;
 };
 
-export const animals: CatalogItem[] = [
+const animalSeed: CatalogItem[] = [
   {
     id: "a1",
     slug: "mochi-syrian",
@@ -315,6 +315,33 @@ export const animals: CatalogItem[] = [
     description: "Winter White betina yang cepat mendekat saat diberi camilan. Tetap perlu adaptasi pelan di kandang baru.",
   },
 ];
+
+export type AnimalSex = "Jantan" | "Betina";
+export type AnimalSexStock = Record<AnimalSex, number>;
+
+// Stok hewan dicatat per gender. Kolom `stock` tetap menyimpan total supaya
+// kompatibel dengan inventaris dan transaksi yang sudah ada.
+export const animalSexStocks: Record<string, AnimalSexStock> = {
+  a1: { Jantan: 13, Betina: 11 }, a2: { Jantan: 9, Betina: 12 },
+  a3: { Jantan: 10, Betina: 9 }, a4: { Jantan: 12, Betina: 8 },
+  a5: { Jantan: 5, Betina: 6 }, a6: { Jantan: 7, Betina: 4 },
+  a7: { Jantan: 4, Betina: 5 }, a8: { Jantan: 6, Betina: 7 },
+  a9: { Jantan: 11, Betina: 9 }, a10: { Jantan: 8, Betina: 13 },
+  a11: { Jantan: 10, Betina: 11 }, a12: { Jantan: 9, Betina: 8 },
+  a13: { Jantan: 12, Betina: 10 }, a14: { Jantan: 8, Betina: 9 },
+  a15: { Jantan: 13, Betina: 12 }, a16: { Jantan: 11, Betina: 8 },
+};
+
+export const getAnimalSexStock = (item: Pick<CatalogItem, "id" | "kind" | "stock">, sex: AnimalSex) => {
+  if (item.kind !== "animal") return 0;
+  const configured = animalSexStocks[item.id];
+  return configured ? configured[sex] : Math.max(0, Math.floor(item.stock / 2));
+};
+
+export const animals: CatalogItem[] = animalSeed.map((item) => {
+  const sexes = animalSexStocks[item.id];
+  return sexes ? { ...item, stock: sexes.Jantan + sexes.Betina, sex: undefined } : item;
+});
 
 export const supplies: CatalogItem[] = [
   {
