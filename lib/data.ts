@@ -936,9 +936,42 @@ const catalogImageOverrides: Record<string, string> = {
   p41: "https://images-cdn.ubuy.co.id/69396af87d514c270f0aef80-dr-dudu-hamster-bath-sand-2-8lb-dust.jpg",
 };
 
+// Harga hewan kecil dibuat realistis untuk katalog lokal. Diskon kategori
+// diterapkan di satu tempat agar harga di fallback API dan data Supabase selalu sama.
+const hamsterPrices: Record<string, number> = {
+  a1: 45_000,
+  a2: 30_000,
+  a3: 35_000,
+  a4: 25_000,
+  a9: 50_000,
+  a10: 42_000,
+  a11: 28_000,
+  a12: 38_000,
+  a13: 32_000,
+  a14: 48_000,
+  a15: 40_000,
+  a16: 34_000,
+};
+
+const roundToFiveHundred = (price: number) => Math.round(price / 500) * 500;
+
+const adjustedCatalogPrice = (item: CatalogItem) => {
+  if (item.kind === "animal" && item.species === "Hamster") {
+    return hamsterPrices[item.id] ?? item.price;
+  }
+
+  if (item.kind === "supply") {
+    const discount = item.category === "Habitat & Kandang" ? 0.7 : 0.85;
+    return roundToFiveHundred(item.price * discount);
+  }
+
+  return item.price;
+};
+
 export const allItems = [...animals, ...supplies].map((item) => ({
   ...item,
   image: catalogImageOverrides[item.id] ?? item.image,
+  price: adjustedCatalogPrice(item),
 }));
 
 export const formatRupiah = (value: number) =>
