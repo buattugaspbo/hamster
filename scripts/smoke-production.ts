@@ -64,8 +64,8 @@ async function main() {
     orderId = created.order.id;
     assert.match(orderId, /^ORD-/);
     assert.equal(created.order.subtotal, product.price);
-    assert.equal(created.order.shippingCost, 10_000);
-    assert.equal(created.order.total, product.price + 10_000);
+    assert.equal(created.order.shippingCost, 15_500);
+    assert.equal(created.order.total, product.price + 15_500);
 
     const query = `?token=${encodeURIComponent(created.paymentToken)}`;
     const detail = await json<{ order: CreatedOrder & { paymentStatus: string } }>(await fetch(`${baseUrl}/api/orders/${orderId}${query}`));
