@@ -874,6 +874,21 @@ export const supplies: CatalogItem[] = [
     description: "Referensi pasir alas hamster 1 kg dari supplier. Simpan dalam kondisi kering dan gunakan pada wadah yang mudah dibersihkan.",
     weightGrams: 1000,
   },
+  {
+    id: "p42",
+    slug: "h3501-dayang-hamster-cage-34x27x27",
+    kind: "supply",
+    name: "H3501 Dayang Hamster Cage 34×27×27 cm",
+    category: "Habitat & Kandang",
+    price: 161000,
+    stock: 8,
+    status: "Tersedia",
+    image: "/supplier-products/h3501-dayang-brown.png",
+    description: "Kandang besi set lengkap ukuran 34 × 27 × 27 cm. Tersedia variasi biru, merah, cokelat, dan pink di listing supplier. Foto katalog diambil dari galeri supplier tanpa banner ukuran.",
+    weightGrams: 2300,
+    dimensions: "34 × 27 × 27 cm",
+    featured: true,
+  },
 ];
 
 export const allItems = [...animals, ...supplies];

@@ -8,6 +8,7 @@ export type SupplierLink = {
 
 // Harga ini hanya acuan belanja admin; harga supplier dapat berubah sewaktu-waktu.
 export const supplierLinks: Record<string, SupplierLink> = {
+  p42: { marketplace: "Shopee", url: "https://shopee.co.id/H3501-Dayang-Hamster-Cage-Kandang-Besi-Hamster-1-Set-Uk-34x27x27cm-i.207757182.25166420764", sourcePrice: 161000, sourceTitle: "H3501 Dayang Hamster Cage Kandang Besi 1 Set 34×27×27 cm", checkedAt: "2026-08-30" },
   p28: { marketplace: "Shopee", url: "https://shopee.co.id/Kandang-Hamster-Full-Akrilik-100x50x50cm--i.66673154.7548433250", sourcePrice: 1485000, sourceTitle: "Kandang Hamster Full Akrilik 100×50×50 cm", checkedAt: "2026-08-30" },
   p29: { marketplace: "Shopee", url: "https://shopee.co.id/Kandang-Hamster-Acrylic-Metal-Frame-100-120-cm-%E2%80%93-BUCATSTATE-DIY-Versi-3.0-i.1125732781.40013623904", sourcePrice: 5880000, sourceTitle: "Kandang Hamster Acrylic Metal Frame 100/120 cm – BUCATSTATE DIY Versi 3.0", checkedAt: "2026-08-30" },
   p30: { marketplace: "Shopee", url: "https://shopee.co.id/Kandang-Hamster-Akrilik-2-Tingkat-PxLxT-80x60x100cm-i.66673154.12025824225", sourcePrice: 2000000, sourceTitle: "Kandang Hamster Akrilik 2 Tingkat 80×60×100 cm", checkedAt: "2026-08-30" },
