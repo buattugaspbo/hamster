@@ -36,7 +36,7 @@ export const animals: CatalogItem[] = [
     price: 185000,
     stock: 1,
     status: "Tersedia",
-    image: "https://images.pexels.com/photos/33914110/pexels-photo-33914110/free-photo-of-adorable-golden-syrian-hamster-portrait-close-up.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    image: "https://images.pexels.com/photos/33914110/pexels-photo-33914110/free-photo-of-adorable-golden-syrian-hamster-portrait-close-up.jpeg?auto=compress&cs=tinysrgb&w=1800",
     description: "Syrian jantan usia 2 bulan. Aktif, makannya lahap, dan sudah cukup santai saat dipegang pelan.",
     featured: true,
   },
@@ -55,7 +55,7 @@ export const animals: CatalogItem[] = [
     price: 150000,
     stock: 1,
     status: "Tersedia",
-    image: "https://images.pexels.com/photos/3362698/pexels-photo-3362698.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    image: "https://images.pexels.com/photos/3362698/pexels-photo-3362698.jpeg?auto=compress&cs=tinysrgb&w=1800",
     description: "Campbell betina usia 1,5 bulan. Geraknya tenang dan tidak gampang kaget saat didekati pelan.",
     featured: true,
   },
@@ -74,7 +74,7 @@ export const animals: CatalogItem[] = [
     price: 165000,
     stock: 1,
     status: "Tersedia",
-    image: "https://images.unsplash.com/photo-1738485974110-4756f78bfa6a?auto=format&fit=crop&w=1200&q=82",
+    image: "https://images.pexels.com/photos/32946469/pexels-photo-32946469.jpeg?auto=compress&cs=tinysrgb&w=1800",
     description: "Winter White betina usia 2 bulan. Aktif di malam hari dan cukup cepat beradaptasi dengan kandang baru.",
   },
   {
@@ -92,7 +92,7 @@ export const animals: CatalogItem[] = [
     price: 175000,
     stock: 1,
     status: "Tersedia",
-    image: "https://images.unsplash.com/photo-1778347108338-eea3ebf3d6a8?auto=format&fit=crop&w=1200&q=82",
+    image: "https://images.pexels.com/photos/28749492/pexels-photo-28749492.jpeg?auto=compress&cs=tinysrgb&w=1800",
     description: "Roborovski jantan usia 1 bulan. Kecil, cepat, dan lebih cocok dilihat bermain daripada sering digendong.",
   },
   {
@@ -110,7 +110,7 @@ export const animals: CatalogItem[] = [
     price: 450000,
     stock: 1,
     status: "Tersedia",
-    image: "https://images.unsplash.com/photo-1591382386627-349b692688ff?auto=format&fit=crop&w=1200&q=82",
+    image: "https://images.pexels.com/photos/19958072/pexels-photo-19958072.jpeg?auto=compress&cs=tinysrgb&w=1800",
     description: "Holland Lop betina usia 3 bulan. Tenang, suka dielus pelan, dan sudah terbiasa makan hay.",
     featured: true,
   },
@@ -129,7 +129,7 @@ export const animals: CatalogItem[] = [
     price: 375000,
     stock: 1,
     status: "Tersedia",
-    image: "https://images.unsplash.com/photo-1559214369-a6b1d7919865?auto=format&fit=crop&w=1200&q=82",
+    image: "https://images.pexels.com/photos/20049452/pexels-photo-20049452.jpeg?auto=compress&cs=tinysrgb&w=1800",
     description: "Netherland Dwarf jantan usia 2,5 bulan. Penasaran dan senang keliling area bermain.",
     featured: true,
   },
@@ -148,7 +148,7 @@ export const animals: CatalogItem[] = [
     price: 525000,
     stock: 1,
     status: "Direservasi",
-    image: "https://images.pexels.com/photos/20049445/pexels-photo-20049445/free-photo-of-close-up-of-a-pet-dwarf-rabbit.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    image: "https://images.pexels.com/photos/10504064/pexels-photo-10504064.jpeg?auto=compress&cs=tinysrgb&w=1800",
     description: "Mini Rex betina usia 4 bulan. Bulunya halus, makannya baik, dan perlu waktu sebentar untuk akrab.",
   },
   {
@@ -166,7 +166,7 @@ export const animals: CatalogItem[] = [
     price: 495000,
     stock: 1,
     status: "Tersedia",
-    image: "https://images.unsplash.com/photo-1452857297128-d9c29adba80b?auto=format&fit=crop&w=1200&q=82",
+    image: "https://images.pexels.com/photos/20178217/pexels-photo-20178217.jpeg?auto=compress&cs=tinysrgb&w=1800",
     description: "Lionhead jantan usia 3 bulan. Ramah, aktif, dan perlu rutin disisir supaya bulunya tidak kusut.",
   },
   {
@@ -184,7 +184,7 @@ export const animals: CatalogItem[] = [
     price: 225000,
     stock: 1,
     status: "Tersedia",
-    image: "https://images.pexels.com/photos/33914110/pexels-photo-33914110/free-photo-of-adorable-golden-syrian-hamster-portrait-close-up.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    image: "https://images.unsplash.com/photo-1738485974110-4756f78bfa6a?auto=format&fit=crop&w=1800&q=86",
     description: "Syrian Long Hair jantan dengan bulu tebal. Sudah terbiasa makan seed mix dan nyaman saat didekati pelan.",
     featured: true,
   },
@@ -203,7 +203,7 @@ export const animals: CatalogItem[] = [
     price: 195000,
     stock: 1,
     status: "Tersedia",
-    image: "https://images.pexels.com/photos/3362698/pexels-photo-3362698.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    image: "https://images.unsplash.com/photo-1778347108338-eea3ebf3d6a8?auto=format&fit=crop&w=1800&q=86",
     description: "Syrian betina usia 2 bulan. Aktif menjelang malam, suka menggali bedding, dan makannya teratur.",
   },
   {
@@ -221,7 +221,7 @@ export const animals: CatalogItem[] = [
     price: 155000,
     stock: 1,
     status: "Tersedia",
-    image: "https://images.unsplash.com/photo-1738485974110-4756f78bfa6a?auto=format&fit=crop&w=1200&q=82",
+    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/54/Russian_hamster.JPG/1280px-Russian_hamster.JPG",
     description: "Campbell jantan yang gesit dan suka menjelajah lorong. Cocok untuk kandang dwarf dengan banyak enrichment.",
   },
   {
@@ -239,7 +239,7 @@ export const animals: CatalogItem[] = [
     price: 170000,
     stock: 1,
     status: "Tersedia",
-    image: "https://images.pexels.com/photos/33914110/pexels-photo-33914110/free-photo-of-adorable-golden-syrian-hamster-portrait-close-up.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Cream-colored_long-hair_pet_Syrian_hamster_on_leaves.jpg/1280px-Cream-colored_long-hair_pet_Syrian_hamster_on_leaves.jpg",
     description: "Winter White jantan yang relatif tenang. Sudah terbiasa memakai sand bath dan botol minum.",
   },
   {
@@ -257,7 +257,7 @@ export const animals: CatalogItem[] = [
     price: 180000,
     stock: 1,
     status: "Tersedia",
-    image: "https://images.pexels.com/photos/3362698/pexels-photo-3362698.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Cream-colored_long-hair_pet_Syrian_hamster_with_banana.jpg/1280px-Cream-colored_long-hair_pet_Syrian_hamster_with_banana.jpg",
     description: "Roborovski betina yang sangat aktif. Lebih nyaman diamati saat bermain daripada sering dipegang.",
   },
   {
@@ -275,7 +275,7 @@ export const animals: CatalogItem[] = [
     price: 160000,
     stock: 1,
     status: "Tersedia",
-    image: "https://images.unsplash.com/photo-1738485974110-4756f78bfa6a?auto=format&fit=crop&w=1200&q=82",
+    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Cream-colored_long-hair_pet_Syrian_hamster_with_various_fruits_02.jpg/1280px-Cream-colored_long-hair_pet_Syrian_hamster_with_various_fruits_02.jpg",
     description: "Campbell betina yang penasaran dengan lingkungan baru. Makan baik dan aktif memakai roda lari.",
   },
   {
@@ -293,7 +293,7 @@ export const animals: CatalogItem[] = [
     price: 210000,
     stock: 1,
     status: "Tersedia",
-    image: "https://images.pexels.com/photos/33914110/pexels-photo-33914110/free-photo-of-adorable-golden-syrian-hamster-portrait-close-up.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/df/Cream-colored_long-hair_pet_Syrian_hamster_with_watermelon_01.jpg/1280px-Cream-colored_long-hair_pet_Syrian_hamster_with_watermelon_01.jpg",
     description: "Syrian jantan usia 3 bulan dengan gerak yang kalem. Suka bersembunyi di multichamber saat siang.",
   },
   {
@@ -311,7 +311,7 @@ export const animals: CatalogItem[] = [
     price: 168000,
     stock: 1,
     status: "Tersedia",
-    image: "https://images.pexels.com/photos/3362698/pexels-photo-3362698.jpeg?auto=compress&cs=tinysrgb&w=1200",
+    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Cream-colored_long-hair_pet_Syrian_hamster_with_watermelon_02.jpg/1280px-Cream-colored_long-hair_pet_Syrian_hamster_with_watermelon_02.jpg",
     description: "Winter White betina yang cepat mendekat saat diberi camilan. Tetap perlu adaptasi pelan di kandang baru.",
   },
 ];
@@ -891,7 +891,55 @@ export const supplies: CatalogItem[] = [
   },
 ];
 
-export const allItems = [...animals, ...supplies];
+// Foto katalog ditinjau per produk. Jangan gunakan satu foto kandang untuk
+// carrier, pakan, atau bedding; itu membuat katalog menyesatkan pembeli.
+const catalogImageOverrides: Record<string, string> = {
+  p1: "https://images.pexels.com/photos/31358527/pexels-photo-31358527.jpeg?auto=compress&cs=tinysrgb&w=1800",
+  p2: "https://images.pexels.com/photos/17829768/pexels-photo-17829768.jpeg?auto=compress&cs=tinysrgb&w=1800",
+  p3: "https://images.pexels.com/photos/12928245/pexels-photo-12928245.jpeg?auto=compress&cs=tinysrgb&w=1800",
+  p4: "https://images.pexels.com/photos/30276533/pexels-photo-30276533.jpeg?auto=compress&cs=tinysrgb&w=1800",
+  p5: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/Deep-litter.JPG/1920px-Deep-litter.JPG",
+  p7: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b8/Wooden_33cm_Hamster_Wheel.jpg/1280px-Wooden_33cm_Hamster_Wheel.jpg",
+  p8: "https://images.pexels.com/photos/35651203/pexels-photo-35651203.jpeg?auto=compress&cs=tinysrgb&w=1800",
+  p9: "https://down-id.img.susercontent.com/file/402799f3297d85b29109ca1e0b6e0cd8",
+  p10: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/Syrian_Hamster_Cage.jpg/1280px-Syrian_Hamster_Cage.jpg",
+  p11: "https://images.pexels.com/photos/36587617/pexels-photo-36587617.jpeg?auto=compress&cs=tinysrgb&w=1800",
+  p12: "https://images.pexels.com/photos/12928244/pexels-photo-12928244.jpeg?auto=compress&cs=tinysrgb&w=1800",
+  p13: "https://images.pexels.com/photos/8434635/pexels-photo-8434635.jpeg?auto=compress&cs=tinysrgb&w=1800",
+  p14: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Young_rabbit_in_a_hay_field_-_geograph.org.uk_-_4051770.jpg/1920px-Young_rabbit_in_a_hay_field_-_geograph.org.uk_-_4051770.jpg",
+  p15: "https://upload.wikimedia.org/wikipedia/commons/c/c0/Feature_on_Hay-Berry_Rabbit_Farms_at_Llandyrnog_and_Llangadwaladr_%281458208%29.jpg",
+  p16: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Hamster_Food.JPG/1280px-Hamster_Food.JPG",
+  p17: "https://upload.wikimedia.org/wikipedia/commons/1/16/Burrowing_Hamster.jpg",
+  p18: "https://s11.badu.bg/photos/2186029/800x800_6986a8cc00c03.jpg",
+  p19: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/79/Hamster_Wheel_for_Syrians.jpg/1280px-Hamster_Wheel_for_Syrians.jpg",
+  p20: "https://upload.wikimedia.org/wikipedia/commons/d/d1/Multicomponent_hamster_cage.jpg",
+  p21: "https://upload.wikimedia.org/wikipedia/commons/0/0f/Hamster_water_bottle_%2814727539599%29.jpg",
+  p22: "https://upload.wikimedia.org/wikipedia/commons/0/08/Feature_on_Hay-Berry_Rabbit_Farms_at_Llandyrnog_and_Llangadwaladr_%281458200%29.jpg",
+  p23: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/Grooming_Supplies.jpg/1280px-Grooming_Supplies.jpg",
+  p24: "https://images.unsplash.com/photo-1657076761228-bdb21cf0bc7c?auto=format&fit=crop&w=1800&q=86",
+  p25: "https://images.pexels.com/photos/29931479/pexels-photo-29931479.jpeg?auto=compress&cs=tinysrgb&w=1800",
+  p26: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/Finished_hamster_habitat_project.jpg/1280px-Finished_hamster_habitat_project.jpg",
+  p27: "https://images.pexels.com/photos/18157421/pexels-photo-18157421.jpeg?auto=compress&cs=tinysrgb&w=1800",
+  p28: "https://www.static-src.com/wcsstore/Indraprastha/images/catalog/full/90/MTA-22865210/no_brand_kandang_hamster_full_akrilik_99x50x50cm_full01_3b61jhk.jpg",
+  p29: "https://bucapet.com/cdn/shop/files/01_1c6de69d-3ba6-4b1e-9fad-43568cff41f8.jpg?v=1717154791",
+  p30: "https://i5.walmartimages.com/seo/ChicHomey-Modern-Hamster-Cage-2-Tiers-Acrylic-Material-Clear-Green-Portable-Handles-Practical-Retainer-Bar-for-Chewing-Ideal-for-Pet-Exploration_d1d850fb-e855-49bd-af14-26c7fc03b04c.af7b6624e054c1aff1e137e2d0630349.jpeg",
+  p31: "https://down-vn.img.susercontent.com/file/b6596fc63b6d7f5b3da251ccd3e2dd67",
+  p32: "https://down-id.img.susercontent.com/file/id-11134207-7r98y-lmwo8aif3elwb5",
+  p33: "https://image.made-in-china.com/2f0j00SnFEilstkVby/Customized-Acrylic-Pet-House-Acrylic-Reptile-Box-Hamster-Cage.webp",
+  p34: "https://down-my.img.susercontent.com/file/my-11134207-7r98t-lzhl3ebvdt9c77",
+  p35: "https://down-id.img.susercontent.com/file/id-11134207-822ws-mnof36hxwmps1b",
+  p36: "https://down-id.img.susercontent.com/file/id-11134207-7r990-lm7kggjtzycr83",
+  p37: "https://down-id.img.susercontent.com/file/id-11134207-23030-o9zxcxg0o6nv8a",
+  p38: "https://down-id.img.susercontent.com/file/id-11134207-7r98x-lnu7y2lgkvob06",
+  p39: "https://petshopindonesia.com/wp-content/uploads/2023/03/1117599_3e574a02-055d-48b2-afa8-c1a41c7dd505.jpg",
+  p40: "https://bimg.akulaku.net/goods/spu/9c8c2ff6df494474805ef86c7652c7137261.jpeg",
+  p41: "https://images-cdn.ubuy.co.id/69396af87d514c270f0aef80-dr-dudu-hamster-bath-sand-2-8lb-dust.jpg",
+};
+
+export const allItems = [...animals, ...supplies].map((item) => ({
+  ...item,
+  image: catalogImageOverrides[item.id] ?? item.image,
+}));
 
 export const formatRupiah = (value: number) =>
   new Intl.NumberFormat("id-ID", {
