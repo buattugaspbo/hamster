@@ -1,27 +1,14 @@
-# Integrasi API Wilayah Indonesia
+# Data alamat Indonesia
 
-Checkout sudah memanggil endpoint internal, bukan vendor secara langsung:
+Checkout memuat wilayah secara bertahap agar data lengkap tidak membebani browser:
 
-- `GET /api/regions?level=province`
-- `GET /api/regions?level=regency&parent=16`
-- `GET /api/regions?level=district&parent=1671`
-- `POST /api/shipping/quote` dengan JSON `{ "regencyCode": "1671", "districtCode": "167101" }`
+1. Provinsi
+2. Kabupaten/kota dari provinsi terpilih
+3. Kecamatan dari kabupaten/kota terpilih
+4. Desa/kelurahan dari kecamatan terpilih
 
-Tanpa konfigurasi apa pun, endpoint wilayah memakai dataset fallback di `lib/regions.ts`. Untuk vendor API pilihan Anda, isi:
+Sumber utama adalah API statis `wilayah.id`, yang memakai data Kepmendagri No. 300.2.2-2138 Tahun 2025: 38 provinsi, 514 kabupaten/kota, 7.285 kecamatan, dan 83.762 desa/kelurahan. Kode wilayah tetap diteruskan ke pesanan untuk validasi.
 
-```env
-INDONESIA_REGION_API_URL=https://api.vendor.example/wilayah
-INDONESIA_REGION_API_TOKEN=secret
-```
+Pengguna tetap mengisi sendiri nama jalan, nomor rumah, RT/RW, dan lorong. Detail tersebut bukan data administratif publik dan tidak boleh ditebak oleh sistem.
 
-Adapter mengharapkan respons berupa array atau `{ "data": [...] }`. Setiap item minimal memiliki `code`/`id` dan `name`/`nama`. Bila kontrak vendor berbeda, cukup ubah `normalizeExternalRegions()` di `app/api/regions/route.ts`; komponen checkout tidak perlu diubah.
-
-Koordinat kabupaten/kota fallback dipakai untuk estimator ongkir. Rumus saat ini:
-
-```text
-jarak = Haversine(titik toko Palembang, titik kabupaten/kota pembeli)
-tarif = Rp10.000 + (jarak × Rp49/km)
-hasil = pembulatan terdekat Rp500
-```
-
-Dengan rumus tersebut, 500 km menghasilkan Rp34.500 setelah pembulatan. Estimasi Haversine adalah jarak garis lurus. Untuk tarif berbasis jalan, ganti fungsi quote dengan respons distance matrix/routing API, lalu teruskan jarak kilometernya ke `calculateShippingCost()`.
+`INDONESIA_REGION_API_URL` bersifat opsional sebagai vendor cadangan. Jika sumber utama atau vendor gagal diakses, aplikasi menampilkan data cadangan yang terbatas agar checkout tidak rusak; pengantaran otomatis hanya tersedia untuk kecamatan yang mempunyai titik pengiriman.

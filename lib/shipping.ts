@@ -34,10 +34,12 @@ export function calculateShippingCost(distanceKm: number) {
 }
 
 export function quoteShipping(regencyCode: string, districtCode?: string) {
-  const destination = regencies.find((region) => region.code === regencyCode);
+  const normalizedRegencyCode = regencyCode.replace(/\D/g, "");
+  const normalizedDistrictCode = districtCode?.replace(/\D/g, "");
+  const destination = regencies.find((region) => region.code === normalizedRegencyCode);
   if (!destination?.latitude || !destination.longitude) return null;
-  const district = districtCode ? districts.find((region) => region.code === districtCode && region.parentCode === regencyCode) : null;
-  if (districtCode && (!district?.latitude || !district.longitude)) return null;
+  const district = normalizedDistrictCode ? districts.find((region) => region.code === normalizedDistrictCode && region.parentCode === normalizedRegencyCode) : null;
+  if (normalizedDistrictCode && (!district?.latitude || !district.longitude)) return null;
   const endpoint = district || destination;
   const rawDistance = haversineDistanceKm(STORE_LOCATION, {
     latitude: endpoint.latitude!,
