@@ -45,7 +45,10 @@ export function AuthExperience({ mode }: { mode: "login" | "register" }) {
       }
       router.push(safeNextPath()); router.refresh();
     } catch (reason) {
-      setError(reason instanceof Error ? reason.message : "Autentikasi gagal");
+      const detail = reason instanceof Error ? reason.message : "";
+      setError(detail.includes("Supabase belum dikonfigurasi")
+        ? "Akun belum aktif di alamat website ini. Coba lagi setelah database disambungkan oleh admin toko."
+        : detail || "Email atau kata sandi belum cocok. Coba periksa lagi.");
     } finally {
       setLoading(false);
     }

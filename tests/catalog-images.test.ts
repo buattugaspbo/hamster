@@ -19,6 +19,7 @@ test("harga katalog mengikuti kebijakan harga toko", () => {
   const cages = allItems.filter((item) => item.category === "Habitat & Kandang");
 
   assert.ok(hamsters.every((item) => item.price >= 20_000 && item.price <= 50_000));
+  assert.equal(allItems.find((item) => item.id === "a5")?.price, 270_000);
   assert.equal(allItems.find((item) => item.id === "p1")?.price, 875_000);
   assert.equal(allItems.find((item) => item.id === "p12")?.price, 61_000);
   assert.ok(cages.every((item) => item.price > 0));

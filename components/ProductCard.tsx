@@ -3,16 +3,20 @@
 import Link from "next/link";
 import { CatalogItem, formatRupiah } from "../lib/data";
 import { addCartItem } from "../lib/cart";
+import { useState } from "react";
 
 export function ProductCard({ item }: { item: CatalogItem }) {
   const isAnimal = item.kind === "animal";
+  const [added, setAdded] = useState(false);
 
   const addToCart = () => {
     addCartItem(item.id);
+    setAdded(true);
+    window.setTimeout(() => setAdded(false), 1800);
   };
 
   return (
-    <article className="product-card">
+    <article className="product-card" id={item.slug}>
       <Link href={isAnimal ? `/animal/${item.slug}` : `/shop#${item.slug}`} className="product-image-wrap">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={item.image} alt={`${item.name}, ${item.breed || item.category}`} className="product-image" />
@@ -34,7 +38,9 @@ export function ProductCard({ item }: { item: CatalogItem }) {
           {isAnimal ? (
             <Link href={`/animal/${item.slug}`} className="text-action">Lihat detail →</Link>
           ) : (
-            <button onClick={addToCart} className="text-action" disabled={item.stock < 1}>+ Tambah</button>
+            <button onClick={addToCart} className={`text-action ${added ? "is-added" : ""}`} disabled={item.stock < 1}>
+              {added ? "✓ Ditambahkan" : "+ Tambah"}
+            </button>
           )}
         </div>
       </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useMemo, useState, type Dispatch, type SetStateAction } from "react";
 import { ProductCard } from "../../components/ProductCard";
 import type { CatalogItem } from "../../lib/data";
 
@@ -15,22 +15,42 @@ export function ShopClient({ items }: { items: CatalogItem[] }) {
   const [query, setQuery] = useState("");
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [selected, setSelected] = useState<string[]>([]);
+  const [sexes, setSexes] = useState<string[]>([]);
+  const [temperaments, setTemperaments] = useState<string[]>([]);
+  const [sort, setSort] = useState("recommended");
+  const isSupplyView = type === "Perlengkapan";
 
   const filtered = useMemo(() => {
-    return items.filter((item) => {
+    const matchingItems = items.filter((item) => {
       const typeMatch =
         type === "Semua" ||
-        (type === "Perlengkapan" ? item.kind === "supply" : item.species === type);
+        (isSupplyView ? item.kind === "supply" : item.species === type);
       const queryMatch = `${item.name} ${item.breed || ""} ${item.category}`.toLowerCase().includes(query.toLowerCase());
       const facetMatch = selected.length === 0 || selected.includes(item.breed || item.category);
-      return typeMatch && queryMatch && facetMatch;
+      const sexMatch = sexes.length === 0 || (item.sex ? sexes.includes(item.sex) : true);
+      const temperamentMatch = temperaments.length === 0 || (item.temperament ? temperaments.some((temperament) => item.temperament?.toLowerCase().includes(temperament.toLowerCase())) : true);
+      return typeMatch && queryMatch && facetMatch && sexMatch && temperamentMatch;
     });
-  }, [items, query, selected, type]);
+    return [...matchingItems].sort((left, right) => {
+      if (sort === "low") return left.price - right.price;
+      if (sort === "high") return right.price - left.price;
+      if (sort === "available") return Number(left.status !== "Tersedia") - Number(right.status !== "Tersedia");
+      return Number(right.featured) - Number(left.featured) || left.name.localeCompare(right.name, "id");
+    });
+  }, [isSupplyView, items, query, selected, sexes, sort, temperaments, type]);
 
-  const facets = type === "Perlengkapan" ? supplyCategories : animalBreeds;
+  const facets = isSupplyView ? supplyCategories : animalBreeds;
 
   const toggleFacet = (facet: string) => {
     setSelected((current) => current.includes(facet) ? current.filter((item) => item !== facet) : [...current, facet]);
+  };
+
+  const toggleValue = (value: string, setter: Dispatch<SetStateAction<string[]>>) => {
+    setter((current) => current.includes(value) ? current.filter((item) => item !== value) : [...current, value]);
+  };
+
+  const clearFilters = () => {
+    setSelected([]); setSexes([]); setTemperaments([]); setQuery("");
   };
 
   return (
@@ -39,7 +59,7 @@ export function ShopClient({ items }: { items: CatalogItem[] }) {
         <div>
           <p className="eyebrow">KATALOG TOKO</p>
           <h1>{type === "Perlengkapan" ? "Perlengkapan" : "Hamster & kelinci yang tersedia"}</h1>
-          <p>{filtered.length} item ada di toko Palembang</p>
+          <p>{filtered.length} produk tersedia · harga dan stok diperbarui dari katalog toko.</p>
         </div>
         <label className="search-field">
           <span>⌕</span>
@@ -53,10 +73,10 @@ export function ShopClient({ items }: { items: CatalogItem[] }) {
         ))}
       </div>
 
-      <button className="mobile-filter-button" onClick={() => setFiltersOpen((value) => !value)}>Filter & jenis</button>
+      <button className="mobile-filter-button" onClick={() => setFiltersOpen((value) => !value)} aria-expanded={filtersOpen}>Filter & urutkan</button>
       <div className="catalog-area">
         <aside className={filtersOpen ? "filters-open" : ""}>
-          <div className="filter-heading"><strong>Filter</strong><button onClick={() => setSelected([])}>Reset</button></div>
+          <div className="filter-heading"><div><strong>Filter</strong><span>Persempit pilihanmu</span></div><button onClick={clearFilters}>Reset</button></div>
           <fieldset>
             <legend>{type === "Perlengkapan" ? "Kategori" : "Jenis / ras"}</legend>
             {facets.map((facet) => (
@@ -66,28 +86,25 @@ export function ShopClient({ items }: { items: CatalogItem[] }) {
               </label>
             ))}
           </fieldset>
-          {type !== "Perlengkapan" && (
+          {!isSupplyView && (
             <>
               <fieldset>
                 <legend>Jenis kelamin</legend>
-                <label><input type="checkbox" /><span>Jantan</span></label>
-                <label><input type="checkbox" /><span>Betina</span></label>
+                {['Jantan', 'Betina'].map((sex) => <label key={sex}><input type="checkbox" checked={sexes.includes(sex)} onChange={() => toggleValue(sex, setSexes)} /><span>{sex}</span></label>)}
               </fieldset>
               <fieldset>
                 <legend>Karakter</legend>
-                <label><input type="checkbox" /><span>Tenang</span></label>
-                <label><input type="checkbox" /><span>Aktif</span></label>
-                <label><input type="checkbox" /><span>Ramah</span></label>
+                {['Tenang', 'Aktif', 'Ramah'].map((temperament) => <label key={temperament}><input type="checkbox" checked={temperaments.includes(temperament)} onChange={() => toggleValue(temperament, setTemperaments)} /><span>{temperament}</span></label>)}
               </fieldset>
             </>
           )}
         </aside>
         <section className="catalog-results">
-          <div className="catalog-toolbar"><span>{filtered.length} hasil</span><select aria-label="Urutkan"><option>Terbaru</option><option>Harga terendah</option><option>Harga tertinggi</option></select></div>
+          <div className="catalog-toolbar"><span>{filtered.length} hasil</span><label>Urutkan <select aria-label="Urutkan produk" value={sort} onChange={(event) => setSort(event.target.value)}><option value="recommended">Rekomendasi</option><option value="low">Harga terendah</option><option value="high">Harga tertinggi</option><option value="available">Stok tersedia dulu</option></select></label></div>
           {filtered.length > 0 ? (
             <div className="catalog-grid">{filtered.map((item) => <ProductCard item={item} key={item.id} />)}</div>
           ) : (
-            <div className="empty-state"><h2>Belum ada hasil yang cocok.</h2><p>Coba hapus filter atau gunakan kata pencarian lain.</p><button onClick={() => { setSelected([]); setQuery(""); }}>Tampilkan semua</button></div>
+            <div className="empty-state"><h2>Belum ada hasil yang cocok.</h2><p>Coba hapus filter atau gunakan kata pencarian lain.</p><button onClick={clearFilters}>Tampilkan semua</button></div>
           )}
         </section>
       </div>

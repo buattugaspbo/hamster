@@ -960,6 +960,10 @@ const adjustedCatalogPrice = (item: CatalogItem) => {
     return hamsterPrices[item.id] ?? item.price;
   }
 
+  if (item.kind === "animal" && item.species === "Kelinci") {
+    return roundToFiveHundred(item.price * 0.6);
+  }
+
   if (item.kind === "supply") {
     const discount = item.category === "Habitat & Kandang" ? 0.7 : 0.85;
     return roundToFiveHundred(item.price * discount);
