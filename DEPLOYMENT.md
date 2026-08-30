@@ -74,6 +74,14 @@ Repo juga menyertakan `vercel.json` yang memaksa preset Next.js dan mengosongkan
 
 Setelah domain produksi tersedia, perbarui `NEXT_PUBLIC_SITE_URL` dan konfigurasi redirect Supabase, lalu redeploy.
 
+Uji alur order, ongkir, QRIS, perubahan status, dan pengembalian stok di deployment produksi:
+
+```bash
+npm run smoke:production
+```
+
+Perintah ini membuat satu order perlengkapan, lalu membatalkan dan menghapusnya lagi setelah seluruh pemeriksaan lolos.
+
 ## 5. Checklist produksi
 
 - Ganti nomor WhatsApp demo di source code dengan nomor toko.
