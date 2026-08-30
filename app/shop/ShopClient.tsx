@@ -5,7 +5,7 @@ import { useMemo, useState } from "react";
 import { ProductCard } from "../../components/ProductCard";
 import type { CatalogItem } from "../../lib/data";
 
-const animalBreeds = ["Syrian", "Campbell", "Winter White", "Roborovski", "Holland Lop", "Netherland Dwarf", "Mini Rex", "Lionhead"];
+const animalBreeds = ["Syrian", "Syrian Long Hair", "Campbell", "Winter White", "Roborovski", "Holland Lop", "Netherland Dwarf", "Mini Rex", "Lionhead"];
 const supplyCategories = ["Habitat & Kandang", "Pakan & Hay", "Alas & Litter", "Mainan & Enrichment", "Tempat Makan & Minum", "Perawatan & Grooming", "Carrier & Perjalanan", "Starter Kit"];
 
 export function ShopClient({ items }: { items: CatalogItem[] }) {

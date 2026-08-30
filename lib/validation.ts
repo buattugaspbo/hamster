@@ -34,6 +34,8 @@ export const orderInputSchema = z.object({
     quantity: z.coerce.number().int().min(1).max(20),
   })).min(1).max(30),
   pickupAt: z.string().datetime({ offset: true }),
+  deliveryMethod: z.enum(["pickup", "delivery"]).default("pickup"),
+  packingType: z.enum(["standard", "toples", "kayu"]).default("standard"),
   notes: z.string().trim().max(2000).optional().default(""),
   shippingAddress: z.string().trim().max(1000).optional().default(""),
   regencyCode: z.string().trim().max(20).optional().default(""),

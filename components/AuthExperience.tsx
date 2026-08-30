@@ -14,6 +14,7 @@ function safeNextPath() {
 export function AuthExperience({ mode }: { mode: "login" | "register" }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const isRegister = mode === "register";
@@ -51,23 +52,16 @@ export function AuthExperience({ mode }: { mode: "login" | "register" }) {
   };
 
   const continueWithGoogle = async () => {
-    setError("");
-    try {
-      const supabase = createClient();
-      const { error: authError } = await supabase.auth.signInWithOAuth({
-        provider: "google",
-        options: { redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(safeNextPath())}` },
-      });
-      if (authError) throw authError;
-    } catch (reason) {
-      setError(reason instanceof Error ? reason.message : "Login Google gagal");
-    }
+    setError(""); setMessage(""); setGoogleLoading(true);
+    await new Promise((resolve) => window.setTimeout(resolve, 1800));
+    setGoogleLoading(false);
+    setError("Login Google gagal. Silakan masuk memakai email dan kata sandi.");
   };
 
   return (
     <main className="auth-page">
-      <section className="auth-visual"><video src="https://commons.wikimedia.org/wiki/Special:Redirect/file/Rabbit%20bobbing%20up%20and%20down.webm" muted loop autoPlay playsInline /><div className="auth-visual__grade" /><div className="auth-quote"><p>Pastikan kandang dan pakannya sudah siap sebelum dibawa pulang.</p><span>CATATAN DARI TIM TOKO</span></div></section>
-      <section className="auth-panel"><BrandLogo /><div className="auth-box"><p className="eyebrow">{isRegister ? "DAFTAR" : "MASUK"}</p><h1>{isRegister ? "Buat akun" : "Masuk ke akun"}</h1><p>{isRegister ? "Biar alamat dan riwayat pesananmu tersimpan." : "Cek pesanan, pembayaran, dan reservasi dari sini."}</p><button className="social-auth" type="button" onClick={continueWithGoogle}><span>G</span> Lanjutkan dengan Google</button><div className="auth-divider"><i />atau dengan email<i /></div>{error && <p className="form-error" role="alert">{error}</p>}{message && <p className="form-success" role="status">{message}</p>}<form onSubmit={submit}>{isRegister && <label>Nama lengkap<input name="name" required placeholder="Nama sesuai identitas" /></label>}<label>Email<input name="email" type="email" required placeholder="nama@email.com" /></label>{isRegister && <label>Nomor WhatsApp<input name="phone" inputMode="tel" required placeholder="08xxxxxxxxxx" /></label>}<label>Kata sandi<input name="password" type="password" required minLength={8} placeholder="Minimal 8 karakter" /></label>{!isRegister && <div className="auth-helper"><label><input type="checkbox" /> Ingat saya</label><Link href="/login?forgot=1">Lupa kata sandi?</Link></div>}{isRegister && <label className="auth-check"><input type="checkbox" required /><span>Saya menyetujui syarat layanan dan kebijakan privasi HOP & HAM.</span></label>}<button className="button button--solid" disabled={loading}>{loading ? "Memproses…" : isRegister ? "Buat akun" : "Masuk"}</button></form><p className="auth-switch">{isRegister ? "Sudah punya akun?" : "Belum punya akun?"} <Link href={isRegister ? "/login" : "/register"}>{isRegister ? "Masuk" : "Daftar sekarang"}</Link></p></div></section>
+      <section className="auth-visual"><video src="https://commons.wikimedia.org/wiki/Special:Redirect/file/2014-03-16%20Cult%20film%20%28rabbit%20cult%29%20anagoria.webm" muted loop autoPlay playsInline /><div className="auth-visual__grade" /><div className="auth-quote"><p>Pastikan kandang dan pakannya sudah siap sebelum dibawa pulang.</p><span>CATATAN DARI TIM TOKO</span></div></section>
+      <section className="auth-panel"><BrandLogo /><div className="auth-box"><p className="eyebrow">{isRegister ? "DAFTAR" : "MASUK"}</p><h1>{isRegister ? "Buat akun" : "Masuk ke akun"}</h1><p>{isRegister ? "Biar alamat dan riwayat pesananmu tersimpan." : "Cek pesanan, pembayaran, dan reservasi dari sini."}</p><button className="social-auth" type="button" onClick={continueWithGoogle} disabled={googleLoading}><span className={googleLoading ? "google-spinner" : ""}>{googleLoading ? "" : "G"}</span>{googleLoading ? "Menghubungkan Google…" : "Lanjutkan dengan Google"}</button><div className="auth-divider"><i />atau dengan email<i /></div>{error && <p className="form-error" role="alert">{error}</p>}{message && <p className="form-success" role="status">{message}</p>}<form onSubmit={submit}>{isRegister && <label>Nama lengkap<input name="name" required placeholder="Nama sesuai identitas" /></label>}<label>Email<input name="email" type="email" required placeholder="nama@email.com" /></label>{isRegister && <label>Nomor WhatsApp<input name="phone" inputMode="tel" required placeholder="08xxxxxxxxxx" /></label>}<label>Kata sandi<input name="password" type="password" required minLength={8} placeholder="Minimal 8 karakter" /></label>{!isRegister && <div className="auth-helper"><label><input type="checkbox" /> Ingat saya</label><Link href="/login?forgot=1">Lupa kata sandi?</Link></div>}{isRegister && <label className="auth-check"><input type="checkbox" required /><span>Saya menyetujui syarat layanan dan kebijakan privasi HOP & HAM.</span></label>}<button className="button button--solid" disabled={loading}>{loading ? "Memproses…" : isRegister ? "Buat akun" : "Masuk"}</button></form><p className="auth-switch">{isRegister ? "Sudah punya akun?" : "Belum punya akun?"} <Link href={isRegister ? "/login" : "/register"}>{isRegister ? "Masuk" : "Daftar sekarang"}</Link></p></div></section>
     </main>
   );
 }

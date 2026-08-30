@@ -4,13 +4,13 @@ import Link from "next/link";
 import { CSSProperties, useEffect, useRef, useState } from "react";
 
 const HAMSTER_VIDEO = "https://commons.wikimedia.org/wiki/Special:Redirect/file/Hamster%20on%20a%20wheel.webm";
-const RABBIT_VIDEO = "https://commons.wikimedia.org/wiki/Special:Redirect/file/Rabbit%20browsing.webm";
+const RABBIT_VIDEO = "https://commons.wikimedia.org/wiki/Special:Redirect/file/2014-03-16%20Cult%20film%20%28rabbit%20cult%29%20anagoria.webm";
 
 const scenes = [
-  { number: "01", label: "Lihat", kicker: "STOK HAMSTER HARI INI", title: <>Lihat geraknya, <em>bukan cuma fotonya.</em></>, text: "Cek dulu cara dia makan, main, dan menjelajah. Kalau ada yang cocok, profil lengkapnya ada di katalog." },
-  { number: "02", label: "Siapkan", kicker: "KANDANG, PAKAN, DAN PERLENGKAPAN", title: <>Sekalian siapin <em>rumahnya.</em></>, text: "Kami pilih ukuran kandang dan perlengkapan yang memang kepakai, jadi kamu nggak perlu menebak-nebak saat belanja." },
-  { number: "03", label: "Mampir", kicker: "BISA DILIHAT LANGSUNG DI TOKO", title: <>Mau kenalan dulu? <em>Boleh.</em></>, text: "Datang ke toko Palembang, lihat kondisinya, lalu tanya apa pun soal makan, kandang, dan kebiasaan hariannya." },
-  { number: "04", label: "Pesan", kicker: "PESAN ONLINE ATAU AMBIL DI TOKO", title: <>Sudah cocok? <em>Tinggal pesan.</em></>, text: "Pilih hewan atau perlengkapannya, tentukan jadwal, lalu bayar lewat QRIS sesuai total pesanan." },
+  { number: "01", label: "Lihat", title: <>Lihat geraknya, <em>bukan cuma fotonya.</em></>, text: "Cek dulu cara dia makan, main, dan menjelajah. Kalau ada yang cocok, profil lengkapnya ada di katalog." },
+  { number: "02", label: "Siapkan", title: <>Sekalian siapin <em>rumahnya.</em></>, text: "Kami pilih ukuran kandang dan perlengkapan yang memang kepakai, jadi kamu nggak perlu menebak-nebak saat belanja." },
+  { number: "03", label: "Mampir", title: <>Mau kenalan dulu? <em>Boleh.</em></>, text: "Datang ke toko Palembang, lihat kondisinya, lalu tanya apa pun soal makan, kandang, dan kebiasaan hariannya." },
+  { number: "04", label: "Pesan", title: <>Sudah cocok? <em>Tinggal pesan.</em></>, text: "Ambil di toko atau minta diantar untuk belanja mulai Rp100.000. Ongkir dan pilihan packing langsung dihitung sebelum bayar." },
 ];
 
 export function HomeExperience() {
@@ -98,14 +98,9 @@ export function HomeExperience() {
           <div className="film-grain" aria-hidden="true" />
         </div>
 
-        <div className="film-topline" aria-hidden="true">
-          <span>VIDEO TOKO</span><i /><span>HAMSTER & KELINCI</span><b>{Math.round(progress * 100).toString().padStart(2, "0")}</b>
-        </div>
-
         <div className="film-copy-stack">
           {scenes.map((scene, index) => (
             <article key={scene.number} className={`film-copy film-copy--${index} ${stage === index ? "is-active" : ""}`} aria-hidden={stage !== index}>
-              <p className="hero-kicker">{scene.kicker}</p>
               <h1>{scene.title}</h1>
               <p className="hero-lede">{scene.text}</p>
               {index === 3 && <div className="hero-actions"><Link href="/shop" className="button button--light">Lihat yang tersedia</Link><Link href="/register" className="button button--ghost">Buat akun</Link></div>}
@@ -119,7 +114,7 @@ export function HomeExperience() {
         </div>
 
         <div className={`film-scroll ${progress > 0.94 ? "is-hidden" : ""}`}><span>GULIR UNTUK LANJUT</span><i>↓</i></div>
-        <a className="film-credit" href="https://commons.wikimedia.org/" target="_blank" rel="noreferrer">Sumber video: Wikimedia Commons</a>
+        <a className="film-credit" href="https://commons.wikimedia.org/" target="_blank" rel="noreferrer">Video: Sweetpea & Greg Heartsfield · Wikimedia Commons</a>
       </div>
     </section>
   );

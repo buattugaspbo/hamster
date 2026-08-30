@@ -30,7 +30,7 @@ async function json<T>(response: Response): Promise<T> {
 }
 
 async function main() {
-  const productId = "p6";
+  const productId = "p1";
   const { data: product, error: productError } = await supabase
     .from("products")
     .select("id, price, stock")
@@ -50,6 +50,8 @@ async function main() {
         phone: "081234567890",
         email: "",
         type: "order",
+        deliveryMethod: "delivery",
+        packingType: "standard",
         items: [{ productId, quantity: 1 }],
         pickupAt: new Date(Date.now() + 86_400_000).toISOString(),
         shippingAddress: "AUTOMATED SMOKE TEST — DELETE ME",

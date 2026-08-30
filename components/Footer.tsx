@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { BrandLogo } from "./BrandLogo";
+import { createWhatsAppUrl, PLACEHOLDER_WHATSAPP_LABEL } from "../lib/contact";
 
 export function Footer() {
   return (
@@ -31,7 +32,7 @@ export function Footer() {
       </div>
       <div>
         <strong>Hubungi kami</strong>
-        <a href="https://wa.me/6281234567890">0812-3456-7890</a>
+        <a href={createWhatsAppUrl()}>{PLACEHOLDER_WHATSAPP_LABEL}</a>
         <span>Palembang, Sumatera Selatan</span>
         <span>Senin–Sabtu · 09.00–18.00</span>
       </div>

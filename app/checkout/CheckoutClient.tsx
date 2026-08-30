@@ -3,6 +3,13 @@
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { clearCart, readCart, type CartEntry } from "../../lib/cart";
+import {
+  MINIMUM_DELIVERY_SUBTOTAL,
+  calculatePackingCost,
+  canUseDelivery,
+  type DeliveryMethod,
+  type PackingType,
+} from "../../lib/checkout";
 import type { CatalogItem } from "../../lib/data";
 import { formatRupiah } from "../../lib/data";
 import type { RegionOption } from "../../lib/regions";
@@ -40,12 +47,14 @@ export function CheckoutClient() {
   const [regencyCode, setRegencyCode] = useState("");
   const [shippingQuote, setShippingQuote] = useState<ShippingQuote | null>(null);
   const [shippingLoading, setShippingLoading] = useState(false);
+  const [deliveryMethod, setDeliveryMethod] = useState<DeliveryMethod>(animalId ? "pickup" : "delivery");
+  const [packingType, setPackingType] = useState<PackingType>(animalId ? "toples" : "standard");
 
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => setCart(readCart()));
     Promise.all([
       fetch("/api/products").then((response) => response.json() as Promise<{ products?: CatalogItem[] }>),
-      animalId ? Promise.resolve([]) : loadRegions("province"),
+      loadRegions("province"),
     ]).then(([catalog, regionRows]) => {
       setProducts(catalog.products || []);
       setProvinces(regionRows as RegionOption[]);
@@ -61,8 +70,17 @@ export function CheckoutClient() {
     });
   }, [animalId, cart, products]);
   const subtotal = selected.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
-  const shippingCost = animalId ? 0 : shippingQuote?.cost || 0;
-  const grandTotal = subtotal + shippingCost;
+  const isDelivery = deliveryMethod === "delivery";
+  const deliveryEligible = canUseDelivery(subtotal);
+  const shippingCost = isDelivery ? shippingQuote?.cost || 0 : 0;
+  const packingCost = calculatePackingCost(animalId ? "reservation" : "order", deliveryMethod, packingType);
+  const grandTotal = subtotal + shippingCost + packingCost;
+
+  const chooseDeliveryMethod = (method: DeliveryMethod) => {
+    setDeliveryMethod(method);
+    setError("");
+    if (method === "pickup") setShippingQuote(null);
+  };
 
   const selectProvince = async (code: string) => {
     setProvinceCode(code); setRegencyCode(""); setShippingQuote(null); setDistricts([]);
@@ -91,7 +109,7 @@ export function CheckoutClient() {
 
   const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!selected.length || (!animalId && !shippingQuote)) return;
+    if (!selected.length || (isDelivery && (!shippingQuote || !deliveryEligible))) return;
     setLoading(true); setError("");
     const form = new FormData(event.currentTarget);
     const destination = [form.get("address"), form.get("district"), regencies.find((region) => region.code === regencyCode)?.name, provinces.find((region) => region.code === provinceCode)?.name, form.get("postal")].filter(Boolean).join(", ");
@@ -102,9 +120,11 @@ export function CheckoutClient() {
         body: JSON.stringify({
           customerName: form.get("name"), phone: form.get("phone"), email: form.get("email"),
           type: animalId ? "reservation" : "order",
+          deliveryMethod,
+          packingType: animalId ? packingType : "standard",
           items: selected.map(({ product, quantity }) => ({ productId: product.id, quantity })),
           pickupAt: `${form.get("date")}T${form.get("time")}:00+07:00`,
-          shippingAddress: animalId ? "" : destination, regencyCode: animalId ? "" : regencyCode,
+          shippingAddress: isDelivery ? destination : "", regencyCode: isDelivery ? regencyCode : "",
           notes: form.get("notes"),
         }),
       });
@@ -131,19 +151,33 @@ export function CheckoutClient() {
           <h2>Data diri</h2>
           <label>Nama lengkap<input name="name" required minLength={2} placeholder="Masukkan nama lengkap" /></label>
           <div className="form-row"><label>Nomor WhatsApp<input name="phone" required inputMode="tel" placeholder="08xxxxxxxxxx" /></label><label>Email <small>(opsional)</small><input name="email" type="email" placeholder="nama@email.com" /></label></div>
-          {!animalId && <>
+          <h2>Mau diterima bagaimana?</h2>
+          <div className="delivery-methods">
+            <button type="button" className={deliveryMethod === "pickup" ? "active" : ""} onClick={() => chooseDeliveryMethod("pickup")}><strong>Ambil di toko</strong><span>Tanpa ongkir, ambil sesuai jadwal.</span></button>
+            <button type="button" className={deliveryMethod === "delivery" ? "active" : ""} onClick={() => chooseDeliveryMethod("delivery")}><strong>Diantar</strong><span>Minimal belanja {formatRupiah(MINIMUM_DELIVERY_SUBTOTAL)}.</span></button>
+          </div>
+          {isDelivery && !deliveryEligible && <p className="delivery-warning">Tambah belanja {formatRupiah(MINIMUM_DELIVERY_SUBTOTAL - subtotal)} lagi supaya pesanan bisa diantar.</p>}
+          {isDelivery && animalId && <>
+            <h2>Packing hewan</h2>
+            <p className="packing-intro">Sebelum berangkat, toples berventilasi dicek dan dikunci oleh tim toko. Pilih pelindung tambahan bila perjalanan atau muatan berisiko.</p>
+            <div className="packing-options">
+              <label className={packingType === "toples" ? "active" : ""}><input type="radio" name="packing" value="toples" checked={packingType === "toples"} onChange={() => setPackingType("toples")} /><span><strong>Toples berventilasi</strong><small>Termasuk · aman untuk perjalanan terjadwal.</small></span></label>
+              <label className={packingType === "kayu" ? "active" : ""}><input type="radio" name="packing" value="kayu" checked={packingType === "kayu"} onChange={() => setPackingType("kayu")} /><span><strong>Toples + pelindung kayu</strong><small>+{formatRupiah(8_000)} · lebih aman jika tertimpa barang lain.</small></span></label>
+            </div>
+          </>}
+          {isDelivery && <>
             <h2>Alamat pengiriman</h2>
             <label>Alamat lengkap<textarea name="address" rows={3} required placeholder="Nama jalan, nomor rumah, RT/RW" /></label>
             <div className="form-row"><label>Provinsi<select required value={provinceCode} onChange={(event) => selectProvince(event.target.value)}><option value="">Pilih provinsi</option>{provinces.map((region) => <option value={region.code} key={region.code}>{region.name}</option>)}</select></label><label>Kabupaten / kota<select required disabled={!provinceCode} value={regencyCode} onChange={(event) => selectRegency(event.target.value)}><option value="">Pilih kabupaten / kota</option>{regencies.map((region) => <option value={region.code} key={region.code}>{region.name}</option>)}</select></label></div>
             <div className="form-row"><label>Kecamatan{districts.length ? <select name="district" required defaultValue=""><option value="">Pilih kecamatan</option>{districts.map((region) => <option value={region.name} key={region.code}>{region.name}</option>)}</select> : <input name="district" required placeholder="Masukkan kecamatan" />}</label><label>Kode pos<input name="postal" required inputMode="numeric" placeholder="30137" /></label></div>
             <div className="shipping-calculator" aria-live="polite"><div><span>Ongkir dari Palembang</span>{shippingLoading ? <strong>Menghitung…</strong> : shippingQuote ? <strong>{formatRupiah(shippingQuote.cost)}</strong> : <strong>Pilih kota tujuan</strong>}</div>{shippingQuote && <p>Mulai dari Rp10.000, lalu ditambah {shippingQuote.distanceKm.toLocaleString("id-ID")} km × Rp49. Hasilnya dibulatkan ke Rp500 terdekat.</p>}<small>Jarak dihitung dari pusat kota Palembang ke kota tujuan.</small></div>
           </>}
-          <h2>{animalId ? "Jadwal pengambilan" : "Jadwal pengiriman"}</h2>
+          <h2>{isDelivery ? "Jadwal pengiriman" : "Jadwal pengambilan"}</h2>
           <div className="form-row"><label>Pilih tanggal<input name="date" required type="date" min={new Date().toISOString().slice(0, 10)} /></label><label>Pilih waktu<select name="time" required defaultValue=""><option value="" disabled>Pilih slot</option><option>10:00</option><option>13:00</option><option>15:00</option><option>17:00</option></select></label></div>
           <label>Catatan untuk tim kami<textarea name="notes" rows={4} placeholder="Tulis catatan jika ada" /></label>
-          {animalId && <label className="check-line"><input type="checkbox" required /><span>Saya sudah membaca panduan perawatan dasar.</span></label>}
+          {animalId && <label className="check-line"><input type="checkbox" required /><span>Saya sudah membaca panduan perawatan dasar dan memahami cara membawa hewan dengan aman.</span></label>}
         </section>
-        <aside className="checkout-summary"><h2>Ringkasan</h2>{selected.map(({ product, quantity }) => <div className="summary-item" key={product.id}>{/* eslint-disable-next-line @next/next/no-img-element */}<img src={product.image} alt={product.name} /><div><strong>{product.name}</strong><span>{quantity} × {product.breed || product.category}</span></div><b>{formatRupiah(product.price * quantity)}</b></div>)}{!animalId && <div className="summary-shipping"><span>Subtotal</span><strong>{formatRupiah(subtotal)}</strong><span>Ongkir</span><strong>{shippingQuote ? formatRupiah(shippingCost) : "—"}</strong></div>}<div className="summary-total"><span>Total</span><strong>{formatRupiah(grandTotal)}</strong></div><p className="reservation-note">Kami cek lagi harga dan stok sebelum QRIS dibuat.</p><button disabled={loading || !selected.length || (!animalId && !shippingQuote)} className="button button--solid" type="submit">{loading ? "Membuat pesanan…" : "Lanjut ke pembayaran"}</button></aside>
+        <aside className="checkout-summary"><h2>Ringkasan</h2>{selected.map(({ product, quantity }) => <div className="summary-item" key={product.id}>{/* eslint-disable-next-line @next/next/no-img-element */}<img src={product.image} alt={product.name} /><div><strong>{product.name}</strong><span>{quantity} × {product.breed || product.category}</span></div><b>{formatRupiah(product.price * quantity)}</b></div>)}<div className="summary-shipping"><span>Subtotal</span><strong>{formatRupiah(subtotal)}</strong><span>{isDelivery ? "Ongkir" : "Pengambilan"}</span><strong>{isDelivery ? shippingQuote ? formatRupiah(shippingCost) : "—" : "Gratis"}</strong>{packingCost > 0 && <><span>Pelindung kayu</span><strong>{formatRupiah(packingCost)}</strong></>}</div><div className="summary-total"><span>Total</span><strong>{formatRupiah(grandTotal)}</strong></div><p className="reservation-note">Tim toko mengecek stok, packing, dan total sebelum QRIS dibuat.</p><button disabled={loading || !selected.length || (isDelivery && (!shippingQuote || !deliveryEligible))} className="button button--solid" type="submit">{loading ? "Membuat pesanan…" : "Lanjut ke pembayaran"}</button></aside>
       </form>
     </div>
   );

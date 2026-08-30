@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { BrandLogo } from "./BrandLogo";
 import { readCart } from "../lib/cart";
+import { createWhatsAppUrl } from "../lib/contact";
 
 export function StoreHeader({ transparent = false }: { transparent?: boolean }) {
   const [open, setOpen] = useState(false);
@@ -47,7 +48,7 @@ export function StoreHeader({ transparent = false }: { transparent?: boolean }) 
           <span>Keranjang</span>
           <b>{cartCount}</b>
         </Link>
-        <a className="whatsapp-button" href="https://wa.me/6281234567890" target="_blank" rel="noreferrer">
+        <a className="whatsapp-button" href={createWhatsAppUrl()} target="_blank" rel="noreferrer">
           WhatsApp
         </a>
       </div>

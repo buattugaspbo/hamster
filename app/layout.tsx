@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ChatWidget } from "../components/ChatWidget";
 import "./globals.css";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
@@ -33,7 +34,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="id">
-      <body className="antialiased">{children}</body>
+      <body className="antialiased">{children}<ChatWidget /></body>
     </html>
   );
 }
