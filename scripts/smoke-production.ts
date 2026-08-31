@@ -4,7 +4,7 @@ import jsQR from "jsqr";
 import { PNG } from "pngjs";
 import { parseQris, validateQris } from "../lib/qris";
 
-const baseUrl = (process.env.SMOKE_BASE_URL || "https://hamster-yaf4.vercel.app").replace(/\/$/, "");
+const baseUrl = (process.env.SMOKE_BASE_URL || "https://hopandham.web.id").replace(/\/$/, "");
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SECRET_KEY;
 

@@ -2,7 +2,12 @@ import type { Metadata } from "next";
 import { ChatWidget } from "../components/ChatWidget";
 import "./globals.css";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+// Domain utama dipakai sebagai fallback agar tautan saat dibagikan tidak pernah
+// mengarah ke localhost jika environment Vercel belum memuat variabel ini.
+const configuredSiteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+const siteUrl = configuredSiteUrl && !configuredSiteUrl.includes("localhost")
+  ? configuredSiteUrl
+  : "https://hopandham.web.id";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),

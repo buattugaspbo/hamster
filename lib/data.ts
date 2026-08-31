@@ -924,7 +924,7 @@ const catalogImageOverrides: Record<string, string> = {
   p1: "https://images.pexels.com/photos/31358527/pexels-photo-31358527.jpeg?auto=compress&cs=tinysrgb&w=1800",
   p2: "https://bunnymansions.com/cdn/shop/files/Metal-playpen-rabbit-2.webp?v=1749474641&width=800",
   p3: "https://www.exoticwings.ca/cdn/shop/products/jfoadutmei7tjwenph4w.jpg?v=1580938371",
-  p4: "https://www.meijer.com/content/dam/meijer/product/0070/88/2077/71/0070882077711_2_A1C1_1200.png",
+  p4: "https://www.baystatepet.com/media/kaytee/00813_TimHay_SA_48oz.jpg",
   p5: "https://i5.walmartimages.com/seo/AlfaPet-Aspen-Bedding-Small-Animals-Bedding_ec4e41c9-df78-43a0-ad35-d8e89cd575f3.81e9dfb50d91f4e9e404a0f7bbb5f61c.jpeg?odnBg=FFFFFF&odnHeight=768&odnWidth=768",
   p7: "https://i5.walmartimages.com/seo/Wooden-Small-Pet-Chewing-Playing-Biting-Toy-Set-for-Hamster-Chinchilla-Rabbit-seven-piece_db545b5c-7545-4fa0-8ffc-c3b6cedab99e.056ebeb1bcde9e9f12232c1d422284e8.jpeg",
   p8: "https://images.pexels.com/photos/35651203/pexels-photo-35651203.jpeg?auto=compress&cs=tinysrgb&w=1800",
